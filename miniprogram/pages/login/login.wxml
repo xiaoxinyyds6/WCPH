@@ -5,7 +5,7 @@
     <view class="slogan">智能守护每一位毛孩子</view>
   </view>
 
-  <button class="btn-primary wx-login" open-type="getPhoneNumber" bindgetphonenumber="onGetPhone">微信手机号一键登录</button>
+  <button class="btn-primary wx-login" open-type="getPhoneNumber" bindgetphonenumber="onGetPhone">微信授权登录</button>
 
   <view class="divider">
     <view class="line"></view>
@@ -30,5 +30,6 @@
   </view>
 
   <button class="btn-primary submit" loading="{{saving}}" bindtap="doLogin">登录</button>
+  <view class="demo-login" bindtap="demoLogin">演示登录（跳过验证）›</view>
   <view class="agreement">登录即代表同意《用户协议》与《隐私政策》</view>
 </view>

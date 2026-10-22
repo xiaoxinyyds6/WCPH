@@ -1,41 +1,63 @@
 <view class="page">
-  <!-- 顶部用户区 -->
-  <view class="header">
-    <view class="user" bindtap="onUserTap">
-      <view class="u-avatar {{logged ? '' : 'guest'}}">
-        <image wx:if="{{logged && user.avatarUrl}}" class="u-img" src="{{user.avatarUrl}}" mode="aspectFill"></image>
-        <text wx:else class="u-emoji">{{logged ? '🙂' : '👤'}}</text>
-      </view>
-      <view class="u-info">
-        <view class="u-name">{{logged ? user.nickname : '请先登录'}}</view>
-        <view class="u-desc">{{logged ? (user.phone || '') : '登录后查看宠物与问诊记录'}}</view>
-      </view>
-      <text class="u-arrow">›</text>
+  <!-- 顶部用户卡片 -->
+  <view class="user-card card" bindtap="onUserTap">
+    <view class="u-avatar {{logged ? '' : 'guest'}}">
+      <image wx:if="{{logged && user.avatarUrl}}" class="u-img" src="{{user.avatarUrl}}" mode="aspectFill"></image>
+      <text wx:else class="u-emoji">{{logged ? '🙂' : '👤'}}</text>
     </view>
+    <view class="u-info">
+      <view class="u-name">{{logged ? user.nickname : '请先登录'}}</view>
+      <view class="u-status {{logged ? 'ok' : ''}}">{{logged ? '已登录' : '未登录'}}</view>
+    </view>
+    <text wx:if="{{!logged}}" class="u-arrow">›</text>
   </view>
 
   <!-- 我的宠物 -->
-  <view class="section">
+  <view class="pet-section card">
     <view class="sec-head">
       <text class="sec-title">我的宠物</text>
-      <text wx:if="{{logged}}" class="sec-more" bindtap="onAddPet">＋ 添加</text>
     </view>
 
-    <view wx:if="{{!logged}}" class="empty card">登录后查看宠物信息</view>
+    <view wx:if="{{!logged}}" class="empty">登录后查看宠物信息</view>
     <block wx:elif="{{pets.length}}">
-      <view class="pet-card card" wx:for="{{pets}}" wx:key="_id" data-id="{{item._id}}" bindtap="onPetTap">
-        <view class="p-avatar">
-          <image wx:if="{{item.avatarIsImage}}" class="p-img" src="{{item.avatar}}" mode="aspectFill"></image>
-          <text wx:else class="p-emoji">{{item.avatar || '🐾'}}</text>
+      <view class="pet-slider">
+        <view wx:if="{{pets.length > 1}}" class="slider-arrow" bindtap="onPrevPet">‹</view>
+        <view class="pet-item" bindtap="onPetTap">
+          <view class="pc-head">
+            <view class="pc-avatar">
+              <image wx:if="{{currentPet.avatarIsImage}}" class="pc-img" src="{{currentPet.avatar}}" mode="aspectFill"></image>
+              <text wx:else class="pc-emoji">{{currentPet.avatar || '🐾'}}</text>
+            </view>
+            <view class="pc-id">
+              <view class="pc-name ellipsis">{{currentPet.name}}</view>
+              <view class="pc-sub ellipsis">{{currentPet.category || '—'}}{{currentPet.breed ? ' · ' + currentPet.breed : ''}}</view>
+            </view>
+            <text class="pc-arrow">›</text>
+          </view>
+          <view class="pc-stats">
+            <view class="pc-stat">
+              <view class="pc-stat-label">岁数</view>
+              <view class="pc-stat-value">{{currentPet.ageText || '—'}}</view>
+            </view>
+            <view class="pc-stat">
+              <view class="pc-stat-label">体重</view>
+              <view class="pc-stat-value">{{currentPet.weight != null ? currentPet.weight + 'kg' : '—'}}</view>
+            </view>
+            <view class="pc-stat">
+              <view class="pc-stat-label">绝育</view>
+              <view class="pc-stat-value">{{currentPet.neutered || '—'}}</view>
+            </view>
+            <view class="pc-stat">
+              <view class="pc-stat-label">体态</view>
+              <view class="pc-stat-value">{{currentPet.body || '—'}}</view>
+            </view>
+          </view>
         </view>
-        <view class="p-info">
-          <view class="p-name">{{item.name}}</view>
-          <view class="p-desc">{{item.breed}}{{item.ageText ? ' · ' + item.ageText : ''}}{{item.weight ? ' · ' + item.weight + 'kg' : ''}}</view>
-        </view>
-        <text class="p-arrow">›</text>
+        <view wx:if="{{pets.length > 1}}" class="slider-arrow" bindtap="onNextPet">›</view>
       </view>
+      <view wx:if="{{pets.length > 1}}" class="pet-dots">{{petIndex + 1}} / {{pets.length}}</view>
     </block>
-    <view wx:else class="empty card">还没有添加宠物，快去添加吧～</view>
+    <view wx:else class="empty" bindtap="onAddPet">还没有添加宠物，点击这里去添加吧～</view>
   </view>
 
   <!-- 问诊记录 -->

@@ -1,21 +1,23 @@
 <view class="page">
-  <view style="background:red;height:120rpx;color:white;font-size:40rpx;">RENDER-TEST</view>
-  <scroll-view class="pet-bar" scroll-x>
-    <view class="pet-item" wx:for="{{pets}}" wx:key="_id" data-id="{{item._id}}" bindtap="onPetTap">
-      <view class="avatar">
-        <image wx:if="{{item.avatarIsImage}}" class="avatar-img" src="{{item.avatar}}" mode="aspectFill"></image>
-        <text wx:else class="avatar-emoji">{{item.avatarText}}</text>
+  <view class="pet-section card">
+    <view class="pet-section-title">选择或添加宠物</view>
+    <scroll-view class="pet-bar" scroll-x>
+      <view class="pet-item" wx:for="{{pets}}" wx:key="_id" data-id="{{item._id}}" bindtap="onPetTap">
+        <view class="avatar">
+          <image wx:if="{{item.avatarIsImage}}" class="avatar-img" src="{{item.avatar}}" mode="aspectFill"></image>
+          <text wx:else class="avatar-emoji">{{item.avatarText}}</text>
+        </view>
+        <text class="pet-name ellipsis">{{item.name}}</text>
       </view>
-      <text class="pet-name ellipsis">{{item.name}}</text>
-    </view>
 
-    <view class="pet-item" bindtap="onAddPet">
-      <view class="avatar add-avatar">
-        <text class="plus">+</text>
+      <view class="pet-item" bindtap="onAddPet">
+        <view class="avatar add-avatar">
+          <text class="plus">+</text>
+        </view>
+        <text class="pet-name">添加</text>
       </view>
-      <text class="pet-name">添加</text>
-    </view>
-  </scroll-view>
+    </scroll-view>
+  </view>
 
   <view class="intro">
     <view class="hero card">

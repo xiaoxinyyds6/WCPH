@@ -10,6 +10,8 @@ Page({
     logged: false,
     user: {},
     pets: [],
+    petIndex: 0,
+    currentPet: {},
     records: []
   },
 
@@ -42,7 +44,15 @@ Page({
             ageText: util.calcAge(p.birthDate)
           })
         )
-        this.setData({ pets })
+        // 刷新后尽量保持当前选中的宠物；若它已被删除则回到第一只
+        const curId = this.data.currentPet && this.data.currentPet._id
+        let petIndex = pets.findIndex(p => p._id === curId)
+        if (petIndex < 0) petIndex = 0
+        this.setData({
+          pets,
+          petIndex,
+          currentPet: pets[petIndex] || {}
+        })
       })
       .catch(cloud.toastError)
 
@@ -73,8 +83,28 @@ Page({
     wx.navigateTo({ url: '/pages/addPet/addPet' })
   },
 
-  onPetTap(e) {
-    wx.navigateTo({ url: '/pages/addPet/addPet?id=' + e.currentTarget.dataset.id })
+  onPrevPet() {
+    this.switchPet(-1)
+  },
+
+  onNextPet() {
+    this.switchPet(1)
+  },
+
+  switchPet(step) {
+    const n = this.data.pets.length
+    if (!n) return
+    const petIndex = (this.data.petIndex + step + n) % n
+    this.setData({
+      petIndex,
+      currentPet: this.data.pets[petIndex]
+    })
+  },
+
+  onPetTap() {
+    const id = this.data.currentPet && this.data.currentPet._id
+    if (!id) return
+    wx.navigateTo({ url: '/pages/addPet/addPet?id=' + id })
   },
 
   onRecordTap(e) {
@@ -89,7 +119,7 @@ Page({
       success: res => {
         if (!res.confirm) return
         getApp().logout()
-        this.setData({ logged: false, user: {}, pets: [], records: [] })
+        this.setData({ logged: false, user: {}, pets: [], petIndex: 0, currentPet: {}, records: [] })
         wx.showToast({ title: '已退出登录', icon: 'none' })
       }
     })

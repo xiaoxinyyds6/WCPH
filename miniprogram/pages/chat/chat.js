@@ -14,7 +14,6 @@ function hm() {
 Page({
   data: {
     pets: [],
-    petNames: [],
     petIndex: -1,
     currentPet: {},
     messages: [],
@@ -25,8 +24,13 @@ Page({
   },
 
   _seq: 0,
+  _chats: null,
+  _savedIds: null,
 
   onLoad(options) {
+    // 每只宠物一份聊天记录：petId -> messages[]
+    this._chats = {}
+    this._savedIds = {}
     this.loadPets(options && options.petId)
   },
 
@@ -37,26 +41,24 @@ Page({
       .then(list => {
         wx.hideLoading()
         const pets = (list || []).map(p =>
-          Object.assign({}, p, { avatarIsImage: isImageUrl(p.avatar) })
+          Object.assign({}, p, {
+            avatarIsImage: isImageUrl(p.avatar),
+            ageText: util.calcAge(p.birthDate)
+          })
         )
-        let petIndex = -1
-        if (preselectId) {
-          petIndex = pets.findIndex(p => p._id === preselectId)
-        } else if (pets.length >= 1) {
-          petIndex = 0
-        }
+        let petIndex = preselectId ? pets.findIndex(p => p._id === preselectId) : -1
+        if (petIndex < 0 && pets.length) petIndex = 0
         this.setData({
           pets,
-          petNames: pets.map(p => p.name),
           petIndex,
           currentPet: petIndex >= 0 ? pets[petIndex] : {}
         })
-        this.pushWelcome()
+        this.ensureChat()
       })
       .catch(err => {
         wx.hideLoading()
         cloud.toastError(err)
-        this.pushWelcome()
+        this.ensureChat()
       })
   },
 
@@ -65,24 +67,60 @@ Page({
     return 'm' + this._seq
   },
 
+  chatKey() {
+    return (this.data.currentPet && this.data.currentPet._id) || 'none'
+  },
+
   appendMessage(role, content) {
-    const _k = this.nextKey()
-    const messages = this.data.messages.concat([{ role, content, timeText: hm(), _k }])
-    this.setData({ messages, scrollTo: 'msg-' + _k })
+    const key = this.chatKey()
+    const msg = { role, content, timeText: hm(), _k: this.nextKey() }
+    const messages = (this._chats[key] || []).concat([msg])
+    this._chats[key] = messages
+    this.setData({ messages, scrollTo: 'msg-' + msg._k })
     return messages
   },
 
-  pushWelcome() {
-    const name = this.data.currentPet && this.data.currentPet.name
-    const greet = name
-      ? `您好！我是AI宠物健康助手🐾 请详细描述「${name}」的情况：发病时间与频率、异常行为、近期饮食与排便、疫苗及驱虫史等，我会为您做初步健康评估。`
-      : '您好！我是AI宠物健康助手🐾 请先在上方选择要咨询的宠物，然后详细描述症状（发病时间、异常行为、饮食排便、疫苗驱虫史等），我会为您做初步健康评估。'
-    this.appendMessage('ai', greet + '\n\n🚨 如遇呼吸困难、大出血、误食毒物、抽搐等危急情况，请立即送医！')
+  // 进入当前宠物的会话：没有记录则生成欢迎语，有则恢复历史
+  ensureChat() {
+    const key = this.chatKey()
+    if (!this._chats[key]) {
+      const name = this.data.currentPet && this.data.currentPet.name
+      const greet = name
+        ? `您好！我是AI宠物健康助手🐾 请详细描述「${name}」的情况：发病时间与频率、异常行为、近期饮食与排便、疫苗及驱虫史等，我会为您做初步健康评估。`
+        : '您好！我是AI宠物健康助手🐾 请先在上方选择要咨询的宠物，然后详细描述症状（发病时间、异常行为、饮食排便、疫苗驱虫史等），我会为您做初步健康评估。'
+      this._chats[key] = [
+        {
+          role: 'ai',
+          content: greet + '\n\n🚨 如遇呼吸困难、大出血、误食毒物、抽搐等危急情况，请立即送医！',
+          timeText: hm(),
+          _k: this.nextKey()
+        }
+      ]
+    }
+    this.setData({
+      messages: this._chats[key],
+      savedId: this._savedIds[key] || '',
+      scrollTo: 'bottom-anchor'
+    })
   },
 
-  onPickPet(e) {
-    const petIndex = Number(e.detail.value)
-    this.setData({ petIndex, currentPet: this.data.pets[petIndex] || {} })
+  onPrevPet() {
+    this.switchPet(-1)
+  },
+
+  onNextPet() {
+    this.switchPet(1)
+  },
+
+  switchPet(step) {
+    const n = this.data.pets.length
+    if (!n) return
+    const petIndex = (this.data.petIndex + step + n) % n
+    this.setData({
+      petIndex,
+      currentPet: this.data.pets[petIndex]
+    })
+    this.ensureChat()
   },
 
   onAddPet() {
@@ -126,6 +164,8 @@ Page({
   },
 
   saveRecord() {
+    const key = this.chatKey()
+    const savedId = this._savedIds[key] || ''
     const msgs = this.data.messages
       .filter(m => m.role === 'user' || m.role === 'ai')
       .map(m => ({ role: m.role, content: m.content, time: m.timeText }))
@@ -140,13 +180,12 @@ Page({
       petAvatar: pet.avatarIsImage ? '' : pet.avatar || ''
     }
 
-    const task = this.data.savedId
-      ? cloud.updateRecord(this.data.savedId, payload)
-      : cloud.addRecord(payload)
+    const task = savedId ? cloud.updateRecord(savedId, payload) : cloud.addRecord(payload)
 
     task
       .then(res => {
-        if (!this.data.savedId && res && res._id) {
+        if (!savedId && res && res._id) {
+          this._savedIds[key] = res._id
           this.setData({ savedId: res._id })
         }
       })

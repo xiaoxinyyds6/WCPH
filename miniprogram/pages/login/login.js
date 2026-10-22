@@ -96,9 +96,18 @@ Page({
       if (pages.length > 1) {
         wx.navigateBack()
       } else {
-        wx.switchTab({ url: '/pages/consult/consult' })
+        wx.switchTab({ url: '/pages/mine/mine' })
       }
     }, 800)
+  },
+
+  // 演示登录：跳过验证码，本地写入登录态，便于预览登录后的页面
+  demoLogin() {
+    this.finishLogin({
+      openid: 'demo_' + Date.now(),
+      nickname: '演示用户',
+      phone: '13800000000'
+    })
   },
 
   doLogin() {

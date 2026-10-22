@@ -3,10 +3,30 @@
   padding: 24rpx 24rpx calc(40rpx + env(safe-area-inset-bottom));
 }
 
-/* 头像区 */
+/* 分组标题 */
+.form-title {
+  display: flex;
+  align-items: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-main);
+  padding: 24rpx 0 12rpx;
+}
+
+.form-title::before {
+  content: '';
+  width: 8rpx;
+  height: 28rpx;
+  border-radius: 4rpx;
+  background: var(--primary);
+  margin-right: 12rpx;
+}
+
+/* 头像区（嵌入基础信息卡片内） */
 .avatar-section {
-  padding: 40rpx 28rpx 28rpx;
+  padding: 8rpx 0 24rpx;
   text-align: center;
+  border-bottom: 2rpx solid #F0F1F5;
 }
 
 .avatar-preview {
@@ -92,7 +112,31 @@
 .row.column {
   flex-direction: column;
   align-items: flex-start;
-  padding: 24rpx 0;
+  padding: 8rpx 0;
+  min-height: 0;
+}
+
+.row.column .row-label {
+  flex: 0 0 auto;
+  width: auto;
+  margin-bottom: 10rpx;
+}
+
+/* 列布局下选项区不参与拉伸，避免整行被撑高 */
+.row.column .chips {
+  flex: none;
+  width: 100%;
+}
+
+/* 选项等宽平铺，占满整行 */
+.row.column .chip {
+  flex: 1;
+  text-align: center;
+  margin: 6rpx 12rpx 0 0;
+}
+
+.row.column .chip:last-child {
+  margin-right: 0;
 }
 
 .row.last {
@@ -111,10 +155,6 @@
   flex: 0 0 170rpx;
   font-size: 28rpx;
   color: var(--text-main);
-}
-
-.row.column .row-label {
-  margin-bottom: 18rpx;
 }
 
 .row-input {
@@ -154,12 +194,12 @@
 }
 
 .chip {
-  padding: 12rpx 30rpx;
+  padding: 8rpx 22rpx;
   border-radius: 999rpx;
   background: #F2F3F7;
   color: var(--text-sub);
-  font-size: 26rpx;
-  margin: 8rpx 0 8rpx 16rpx;
+  font-size: 24rpx;
+  margin: 6rpx 0 6rpx 14rpx;
 }
 
 .chip.active {

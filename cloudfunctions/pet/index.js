@@ -14,7 +14,7 @@ async function ensureCollection() {
 
 const FIELDS = [
   'name', 'avatar', 'category', 'breed', 'gender',
-  'birthDate', 'weight', 'neutered', 'dewormed'
+  'birthDate', 'weight', 'neutered', 'body', 'dewormed'
 ]
 
 function pick(pet) {

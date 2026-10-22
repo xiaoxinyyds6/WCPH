@@ -23,9 +23,11 @@ Page({
     categories: dict.CATEGORIES,
     catIndex: -1,
     category: '',
+    customCategory: '',
     breeds: [],
     breedIndex: -1,
     breed: '',
+    customBreed: '',
 
     genderOptions: ['公', '母'],
     gender: '',
@@ -37,6 +39,9 @@ Page({
 
     neuterOptions: ['已绝育', '未绝育', '未知'],
     neutered: '未知',
+
+    bodyOptions: ['偏瘦', '标准', '偏胖', '肥胖'],
+    body: '标准',
 
     dewormOptions: ['已驱虫', '未驱虫', '未知'],
     dewormed: '未知'
@@ -71,21 +76,32 @@ Page({
       .then(p => {
         wx.hideLoading()
         if (!p) return
-        const catIndex = this.data.categories.indexOf(p.category)
-        const breeds = dict.getBreeds(p.category)
+        // 历史数据若不在字典内（自定义分类/品种），回填为「其他」+ 自定义文本
+        const knownCat = dict.CATEGORIES.indexOf(p.category) >= 0
+        const category = knownCat ? p.category : (p.category ? '其他' : '')
+        const customCategory = knownCat ? '' : (p.category || '')
+        const catIndex = category ? dict.CATEGORIES.indexOf(category) : -1
+        const breeds = dict.getBreeds(category)
+        const knownBreed = p.breed && breeds.indexOf(p.breed) >= 0 && p.breed !== '其他'
+        const breed = p.breed ? (knownBreed ? p.breed : '其他') : ''
+        const breedIndex = breed ? breeds.indexOf('其他') : -1
+        const customBreed = knownBreed ? '' : (p.breed === '其他' ? '' : (p.breed || ''))
         this.setData({
           avatar: p.avatar || '🐶',
           avatarIsImage: isImageUrl(p.avatar),
           name: p.name || '',
           catIndex,
-          category: p.category || '',
+          category,
+          customCategory,
           breeds,
-          breedIndex: breeds.indexOf(p.breed),
-          breed: p.breed || '',
+          breedIndex,
+          breed,
+          customBreed,
           gender: p.gender || '',
           birthDate: p.birthDate || '',
           weight: p.weight != null ? String(p.weight) : '',
           neutered: p.neutered || '未知',
+          body: p.body || '标准',
           dewormed: p.dewormed || '未知'
         })
       })
@@ -138,15 +154,25 @@ Page({
     this.setData({
       catIndex,
       category,
+      customCategory: '',
       breeds: dict.getBreeds(category),
       breedIndex: -1,
-      breed: ''
+      breed: '',
+      customBreed: ''
     })
+  },
+
+  onCustomCategory(e) {
+    this.setData({ customCategory: e.detail.value })
   },
 
   onBreed(e) {
     const breedIndex = Number(e.detail.value)
-    this.setData({ breedIndex, breed: this.data.breeds[breedIndex] })
+    this.setData({ breedIndex, breed: this.data.breeds[breedIndex], customBreed: '' })
+  },
+
+  onCustomBreed(e) {
+    this.setData({ customBreed: e.detail.value })
   },
 
   onGender(e) {
@@ -155,6 +181,10 @@ Page({
 
   onNeutered(e) {
     this.setData({ neutered: e.currentTarget.dataset.val })
+  },
+
+  onBody(e) {
+    this.setData({ body: e.currentTarget.dataset.val })
   },
 
   onDewormed(e) {
@@ -169,7 +199,10 @@ Page({
     const d = this.data
     if (!d.name.trim()) return '请填写宠物名字'
     if (!d.category) return '请选择宠物分类'
-    if (!d.breed) return '请选择宠物品种'
+    if (d.category === '其他' && !d.customCategory.trim()) return '请输入自定义分类名称'
+    const isCustomBreed = d.category === '其他' || d.breed === '其他'
+    if (isCustomBreed && !d.customBreed.trim()) return '请输入品种名称'
+    if (!isCustomBreed && !d.breed) return '请选择宠物品种'
     const w = parseFloat(d.weight)
     if (isNaN(w) || w <= 0) return '体重必须大于0'
     if (w > 500) return '请输入合理的体重'
@@ -184,15 +217,17 @@ Page({
       return
     }
     const d = this.data
+    const isCustomBreed = d.category === '其他' || d.breed === '其他'
     const pet = {
       name: d.name.trim(),
       avatar: d.avatar,
-      category: d.category,
-      breed: d.breed,
+      category: d.category === '其他' ? d.customCategory.trim() : d.category,
+      breed: isCustomBreed ? d.customBreed.trim() : d.breed,
       gender: d.gender,
       birthDate: d.birthDate,
       weight: parseFloat(d.weight),
       neutered: d.neutered,
+      body: d.body,
       dewormed: d.dewormed
     }
 

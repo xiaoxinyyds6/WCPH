@@ -7,50 +7,127 @@
 
 /* 顶部 */
 .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 16rpx 24rpx;
   background: #fff;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
   z-index: 5;
 }
 
-.pet-select {
+/* 单宠物信息卡 + 左右切换箭头 */
+.pet-slider {
   display: flex;
   align-items: center;
 }
 
-.ps-avatar {
-  width: 60rpx;
-  height: 60rpx;
+.slider-arrow {
+  width: 56rpx;
+  height: 56rpx;
+  flex: 0 0 56rpx;
   border-radius: 50%;
   background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 40rpx;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-card {
+  flex: 1;
+  min-width: 0;
+  margin: 0 16rpx;
+  padding: 24rpx;
+  border: 2rpx solid #EEF2F8;
+  border-radius: 24rpx;
+  background: linear-gradient(180deg, #FBFCFF 0%, #F5F7FE 100%);
+}
+
+.pc-head {
+  display: flex;
+  align-items: center;
+}
+
+.pc-avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 28rpx;
+  background: #fff;
+  border: 2rpx solid #EEF2F8;
+  box-shadow: 0 4rpx 14rpx rgba(91, 124, 250, 0.10);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  flex: 0 0 96rpx;
 }
 
-.ps-img {
+.pc-img {
   width: 100%;
   height: 100%;
 }
 
-.ps-emoji {
-  font-size: 34rpx;
+.pc-emoji {
+  font-size: 52rpx;
   line-height: 1;
 }
 
-.ps-name {
-  font-size: 28rpx;
-  font-weight: 600;
-  margin: 0 10rpx 0 16rpx;
+.pc-id {
+  flex: 1;
+  margin-left: 20rpx;
+  min-width: 0;
+}
+
+.pc-name {
+  font-size: 32rpx;
+  font-weight: 700;
   color: var(--text-main);
 }
 
-.ps-arrow {
+.pc-sub {
+  margin-top: 6rpx;
   font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+.pc-stats {
+  display: flex;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 2rpx solid #EEF2F8;
+}
+
+.pc-stat {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.pc-stat + .pc-stat {
+  border-left: 2rpx solid #EEF2F8;
+}
+
+.pc-stat-label {
+  font-size: 20rpx;
+  color: var(--text-light);
+}
+
+.pc-stat-value {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-main);
+  padding: 0 6rpx;
+}
+
+.topbar-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.empty-text {
+  font-size: 26rpx;
   color: var(--text-light);
 }
 

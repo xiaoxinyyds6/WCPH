@@ -139,6 +139,13 @@
   margin-top: 48rpx;
 }
 
+.demo-login {
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--primary);
+  margin-top: 28rpx;
+}
+
 .agreement {
   text-align: center;
   font-size: 22rpx;

@@ -1,18 +1,46 @@
 <view class="chat">
-  <!-- 顶部宠物选择 -->
+  <!-- 顶部宠物信息 -->
   <view class="topbar">
-    <picker mode="selector" range="{{petNames}}" value="{{petIndex}}" bindchange="onPickPet" disabled="{{!pets.length}}">
-      <view class="pet-select">
-        <view class="ps-avatar">
-          <image wx:if="{{currentPet.avatarIsImage}}" class="ps-img" src="{{currentPet.avatar}}" mode="aspectFill"></image>
-          <text wx:else class="ps-emoji">{{currentPet.avatar || '🐾'}}</text>
+    <view wx:if="{{currentPet._id}}" class="pet-slider">
+      <view wx:if="{{pets.length > 1}}" class="slider-arrow" bindtap="onPrevPet">‹</view>
+      <view class="pet-card">
+        <view class="pc-head">
+          <view class="pc-avatar">
+            <image wx:if="{{currentPet.avatarIsImage}}" class="pc-img" src="{{currentPet.avatar}}" mode="aspectFill"></image>
+            <text wx:else class="pc-emoji">{{currentPet.avatar || '🐾'}}</text>
+          </view>
+          <view class="pc-id">
+            <view class="pc-name ellipsis">{{currentPet.name}}</view>
+            <view class="pc-sub ellipsis">{{currentPet.category || '—'}}{{currentPet.breed ? ' · ' + currentPet.breed : ''}}</view>
+          </view>
+          <text wx:if="{{savedId}}" class="saved-tag">已存记录</text>
         </view>
-        <text class="ps-name">{{currentPet.name || (pets.length ? '选择宠物' : '暂无宠物')}}</text>
-        <text class="ps-arrow">▾</text>
+        <view class="pc-stats">
+          <view class="pc-stat">
+            <view class="pc-stat-label">岁数</view>
+            <view class="pc-stat-value">{{currentPet.ageText || '—'}}</view>
+          </view>
+          <view class="pc-stat">
+            <view class="pc-stat-label">体重</view>
+            <view class="pc-stat-value">{{currentPet.weight != null ? currentPet.weight + 'kg' : '—'}}</view>
+          </view>
+          <view class="pc-stat">
+            <view class="pc-stat-label">绝育</view>
+            <view class="pc-stat-value">{{currentPet.neutered || '—'}}</view>
+          </view>
+          <view class="pc-stat">
+            <view class="pc-stat-label">体态</view>
+            <view class="pc-stat-value">{{currentPet.body || '—'}}</view>
+          </view>
+        </view>
       </view>
-    </picker>
-    <text wx:if="{{!pets.length}}" class="add-link" bindtap="onAddPet">去添加</text>
-    <text wx:elif="{{savedId}}" class="saved-tag">已存记录</text>
+      <view wx:if="{{pets.length > 1}}" class="slider-arrow" bindtap="onNextPet">›</view>
+    </view>
+
+    <view wx:else class="topbar-empty">
+      <text class="empty-text">还没有宠物，问诊前请先添加宠物信息</text>
+      <text class="add-link" bindtap="onAddPet">去添加</text>
+    </view>
   </view>
 
   <!-- 消息列表 -->

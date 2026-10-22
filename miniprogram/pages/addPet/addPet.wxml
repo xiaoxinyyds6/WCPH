@@ -1,25 +1,26 @@
 <view class="page">
-  <!-- 头像 -->
-  <view class="avatar-section card">
-    <view class="avatar-preview" bindtap="chooseFromAlbum">
-      <image wx:if="{{avatarIsImage}}" class="avatar-img" src="{{avatar}}" mode="aspectFill"></image>
-      <text wx:else class="avatar-emoji">{{avatar || '🐾'}}</text>
-      <view class="avatar-edit">📷</view>
-    </view>
-    <view class="avatar-tip">点击上传图片，或从下方选择卡通头像</view>
-    <scroll-view class="avatar-list" scroll-x enhanced show-scrollbar="{{false}}">
-      <view
-        wx:for="{{defaultAvatars}}"
-        wx:key="*this"
-        class="avatar-option {{avatar === item ? 'active' : ''}}"
-        data-avatar="{{item}}"
-        bindtap="pickDefaultAvatar"
-      >{{item}}</view>
-    </scroll-view>
-  </view>
-
-  <!-- 表单 -->
+  <!-- 基础信息 -->
   <view class="form card">
+    <view class="form-title">基础信息</view>
+
+    <view class="avatar-section">
+      <view class="avatar-preview" bindtap="chooseFromAlbum">
+        <image wx:if="{{avatarIsImage}}" class="avatar-img" src="{{avatar}}" mode="aspectFill"></image>
+        <text wx:else class="avatar-emoji">{{avatar || '🐾'}}</text>
+        <view class="avatar-edit">📷</view>
+      </view>
+      <view class="avatar-tip">点击上传图片，或从下方选择卡通头像</view>
+      <scroll-view class="avatar-list" scroll-x enhanced show-scrollbar="{{false}}">
+        <view
+          wx:for="{{defaultAvatars}}"
+          wx:key="*this"
+          class="avatar-option {{avatar === item ? 'active' : ''}}"
+          data-avatar="{{item}}"
+          bindtap="pickDefaultAvatar"
+        >{{item}}</view>
+      </scroll-view>
+    </view>
+
     <view class="row">
       <text class="row-label">宠物名字</text>
       <input class="row-input" placeholder="请输入宠物名字" placeholder-class="ph" value="{{name}}" bindinput="onName" />
@@ -35,7 +36,12 @@
       </view>
     </picker>
 
-    <picker class="row" mode="selector" range="{{breeds}}" value="{{breedIndex}}" disabled="{{!category}}" bindchange="onBreed">
+    <view class="row" wx:if="{{category === '其他'}}">
+      <text class="row-label">自定义分类</text>
+      <input class="row-input" placeholder="请输入分类名称" placeholder-class="ph" value="{{customCategory}}" bindinput="onCustomCategory" />
+    </view>
+
+    <picker wx:if="{{category !== '其他'}}" class="row" mode="selector" range="{{breeds}}" value="{{breedIndex}}" disabled="{{!category}}" bindchange="onBreed">
       <view class="row-inner">
         <text class="row-label">宠物品种</text>
         <view class="row-value {{breed ? '' : 'ph'}}">
@@ -44,6 +50,16 @@
         </view>
       </view>
     </picker>
+
+    <view class="row" wx:if="{{category !== '其他' && breed === '其他'}}">
+      <text class="row-label">自定义品种</text>
+      <input class="row-input" placeholder="请输入品种名称" placeholder-class="ph" value="{{customBreed}}" bindinput="onCustomBreed" />
+    </view>
+
+    <view class="row" wx:if="{{category === '其他'}}">
+      <text class="row-label">宠物品种</text>
+      <input class="row-input" placeholder="请输入品种名称" placeholder-class="ph" value="{{customBreed}}" bindinput="onCustomBreed" />
+    </view>
 
     <view class="row">
       <text class="row-label">性别</text>
@@ -58,7 +74,7 @@
       </view>
     </view>
 
-    <picker class="row" mode="date" value="{{birthDate}}" end="{{today}}" bindchange="onBirth">
+    <picker class="row last" mode="date" value="{{birthDate}}" end="{{today}}" bindchange="onBirth">
       <view class="row-inner">
         <text class="row-label">出生日期</text>
         <view class="row-value {{birthDate ? '' : 'ph'}}">
@@ -67,11 +83,20 @@
         </view>
       </view>
     </picker>
+  </view>
 
-    <view class="row">
+  <!-- 体型信息 -->
+  <view class="form card">
+    <view class="form-title">体型信息</view>
+    <view class="row last">
       <text class="row-label">体重(kg)</text>
       <input class="row-input" type="digit" placeholder="请输入体重" placeholder-class="ph" value="{{weight}}" bindinput="onWeight" />
     </view>
+  </view>
+
+  <!-- 健康信息 -->
+  <view class="form card">
+    <view class="form-title">健康信息</view>
 
     <view class="row column">
       <text class="row-label">绝育状态</text>
@@ -82,6 +107,19 @@
           class="chip {{neutered === item ? 'active' : ''}}"
           data-val="{{item}}"
           bindtap="onNeutered"
+        >{{item}}</view>
+      </view>
+    </view>
+
+    <view class="row column">
+      <text class="row-label">体态</text>
+      <view class="chips">
+        <view
+          wx:for="{{bodyOptions}}"
+          wx:key="*this"
+          class="chip {{body === item ? 'active' : ''}}"
+          data-val="{{item}}"
+          bindtap="onBody"
         >{{item}}</view>
       </view>
     </view>
