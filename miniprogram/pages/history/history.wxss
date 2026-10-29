@@ -3,12 +3,16 @@
   padding: 24rpx;
 }
 
-.clear-row {
-  text-align: right;
-  margin-bottom: 20rpx;
+.manage-row {
+  height: 64rpx;
+  margin-bottom: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .clear-link {
+  margin-right: 20rpx;
   font-size: 26rpx;
   color: var(--danger);
 }
@@ -61,4 +65,93 @@
   color: var(--text-light);
   font-size: 26rpx;
   padding: 100rpx 0;
+}
+
+.delete-entry {
+  position: fixed;
+  right: 28rpx;
+  bottom: calc(36rpx + env(safe-area-inset-bottom));
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #FAEDED;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.12);
+  color: var(--danger);
+  font-size: 34rpx;
+  line-height: 72rpx;
+  text-align: center;
+}
+
+.manage-cancel {
+  padding: 12rpx 4rpx;
+  color: var(--text-sub);
+  font-size: 26rpx;
+}
+
+.rec-card.selected {
+  border: 2rpx solid var(--primary);
+  background: var(--primary-soft);
+}
+
+.select-indicator {
+  width: 36rpx;
+  height: 36rpx;
+  flex: 0 0 36rpx;
+  margin-right: 18rpx;
+  border: 2rpx solid var(--text-light);
+  border-radius: 50%;
+  color: #FFFFFF;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.select-indicator.checked {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.page.is-selecting {
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
+}
+
+.delete-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding: 20rpx 24rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: #FFFFFF;
+  box-shadow: 0 -6rpx 24rpx rgba(0, 0, 0, 0.08);
+}
+
+.delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  min-height: 88rpx;
+  padding: 0;
+  border-radius: 999rpx;
+  background: var(--danger);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  line-height: 1;
+  text-align: center;
+}
+
+.delete-btn::after {
+  border: 0;
+}
+
+.delete-btn[disabled] {
+  background: var(--danger);
+  color: #FFFFFF;
+  opacity: 0.45;
 }

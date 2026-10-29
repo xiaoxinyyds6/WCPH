@@ -2,10 +2,15 @@ const cloud = require('wx-server-sdk')
 const https = require('https')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
+const db = cloud.database()
 
 // 视觉模型按优先级尝试：glm-4.6v-flash（免费、支持多图）→ glm-4v-flash（免费、仅单图）
-const MODELS = ['glm-4.6v-flash', 'glm-4v-flash']
+const VISION_MODELS = ['glm-4.6v-flash', 'glm-4v-flash']
+// 文本模型：glm-4-flash 支持 Function Calling，用于 Agent 工具调用
+const TEXT_MODEL = 'glm-4-flash'
 const MAX_IMAGES = 3
+// Agent 工具调用最多轮数（防止无限循环，配合前端 30s 超时）
+const MAX_TOOL_ROUNDS = 3
 
 const SYSTEM_PROMPT = [
   '你是"AI宠物健康助手"，具备扎实兽医临床知识的在线问诊助手。回答必须准确、克制、可执行。',
@@ -40,8 +45,8 @@ function callZhipu(payload) {
           Authorization: `Bearer ${process.env.ZHIPU_API_KEY}`,
           'Content-Length': Buffer.byteLength(body)
         },
-        // 两级模型回退与前端 20s 超时预算保持一致
-        timeout: 7000
+        // 两级模型回退与前端 30s 超时预算保持一致
+        timeout: 8000
       },
       res => {
         let data = ''
@@ -139,6 +144,131 @@ function buildContent(data) {
   return lines.join('\n\n')
 }
 
+// ================= OCR + 图像识别 + 情感：system prompt 组装 =================
+
+// hasImages：是否带图（带图走视觉模型，不注入工具说明）
+function buildSystemPrompt(hasImages, mood) {
+  const parts = [SYSTEM_PROMPT]
+
+  if (hasImages) {
+    // OCR（光学字符识别）+ 图像识别提示
+    parts.push(
+      '【图像能力】',
+      '1. OCR 文字识别：若图片中包含文字（化验单、检查报告、病历、处方单、疫苗本、说明书、发票等），先在 analysis 开头逐行完整提取图中文字，再逐项解读异常指标与含义。',
+      '2. 图像识别：判断图中动物物种与品种（如可辨认）、拍摄部位、可见异常（分泌物、红肿、脱毛、伤口、姿态异常等），识别结果写入 analysis。'
+    )
+  }
+
+  // 情感分析：焦虑时先安抚再建议
+  if (mood === 'anxious') {
+    parts.push(
+      '【情感语气】主人当前情绪比较焦虑，请先用一两句温柔的话安抚情绪，再给出条理清晰、可执行的建议，避免使用加重恐慌的措辞。'
+    )
+  }
+
+  // Agent：工具调用说明（仅纯文本对话注入，带图时视觉模型不支持）
+  if (!hasImages) {
+    parts.push(
+      '【工具调用】你可以调用以下工具获取事实信息，需要时先调用工具、再基于结果作答：',
+      '- get_weather(city)：查询城市实时天气，判断是否适宜宠物外出/遛狗/防中暑时使用。'
+    )
+  }
+
+  return parts.join('\n')
+}
+
+// ================= 情感分析（规则法）：识别焦虑语气 =================
+
+const ANXIOUS_WORDS = [
+  '担心', '害怕', '急', '救命', '救救', '疼', '痛', '哭', '崩溃', '不行了',
+  '难受', '严重吗', '恶化', '吐血', '抽搐', '瘫', '危险', '怎么办', '吓死'
+]
+
+function analyzeSentiment(text) {
+  const t = String(text || '')
+  const hits = ANXIOUS_WORDS.filter(w => t.indexOf(w) >= 0)
+  return { mood: hits.length ? 'anxious' : 'neutral', hits: hits.slice(0, 5) }
+}
+
+// ================= Agent：工具定义与执行 =================
+
+// WMO 天气代码 → 中文描述
+const WEATHER_CODES = {
+  0: '晴', 1: '基本晴', 2: '局部多云', 3: '阴',
+  45: '有雾', 48: '雾凇',
+  51: '毛毛雨', 53: '毛毛雨', 55: '浓毛毛雨', 56: '冻毛毛雨', 57: '冻毛毛雨',
+  61: '小雨', 63: '中雨', 65: '大雨', 66: '冻雨', 67: '冻雨',
+  71: '小雪', 73: '中雪', 75: '大雪', 77: '雪粒',
+  80: '小阵雨', 81: '阵雨', 82: '强阵雨', 85: '小阵雪', 86: '阵雪',
+  95: '雷阵雨', 96: '雷阵雨伴冰雹', 99: '雷阵雨伴冰雹'
+}
+
+function httpsGetJson(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, res => {
+        let data = ''
+        res.on('data', c => (data += c))
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data))
+          } catch (e) {
+            reject(new Error('天气接口响应解析失败'))
+          }
+        })
+      })
+      .on('error', reject)
+  })
+}
+
+// Open-Meteo 免费天气接口（无需 API key）：城市名 → 经纬度 → 当前天气
+function getWeather(city) {
+  const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=zh&format=json`
+  return httpsGetJson(geoUrl).then(geo => {
+    const loc = geo.results && geo.results[0]
+    if (!loc) return { ok: false, msg: `未找到城市「${city}」` }
+    const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`
+    return httpsGetJson(wUrl).then(w => {
+      const c = w.current || {}
+      return {
+        ok: true,
+        city: loc.name,
+        country: loc.country || '',
+        weather: WEATHER_CODES[c.weather_code] || '未知',
+        temperature: c.temperature_2m,
+        humidity: c.relative_humidity_2m,
+        windSpeed: c.wind_speed_10m
+      }
+    })
+  })
+}
+
+const TOOLS = [
+  {
+    type: 'function',
+    function: {
+      name: 'get_weather',
+      description:
+        '查询全球任意城市当前实时天气（天气现象、气温、湿度、风速）。用于判断是否适宜宠物外出、遛狗、防中暑等场景。',
+      parameters: {
+        type: 'object',
+        properties: {
+          city: { type: 'string', description: '城市名称，如：北京、上海、广州' }
+        },
+        required: ['city']
+      }
+    }
+  }
+]
+
+async function runTool(name, args) {
+  if (name === 'get_weather') {
+    if (!args || !args.city) return { ok: false, msg: '缺少城市参数' }
+    return getWeather(String(args.city))
+  }
+  return { ok: false, msg: `未知工具：${name}` }
+}
+
 exports.main = async event => {
   const apiKey = process.env.ZHIPU_API_KEY
   if (!apiKey) {
@@ -149,7 +279,10 @@ exports.main = async event => {
     }
   }
 
+  const { OPENID } = cloud.getWXContext()
+
   try {
+    // ===== AI 问诊（默认） =====
     const { question = '', petProfile = {}, fileIDs = [] } = event
 
     // 内容安全：问题文本违规直接拦截；openapi 不可用时放行（fail-open）
@@ -157,7 +290,7 @@ exports.main = async event => {
       const sec = await cloud.openapi.security.msgSecCheck({
         version: 2,
         scene: 2,
-        openid: cloud.getWXContext().OPENID,
+        openid: OPENID,
         content: question
       })
       const d = sec && sec.result
@@ -168,50 +301,130 @@ exports.main = async event => {
       console.warn('[assistant] msgSecCheck 不可用，放行', e && e.message)
     }
 
-    const content = []
+    // 下载图片并转 base64
+    const imageUrls = []
     for (const fileID of fileIDs.slice(0, MAX_IMAGES)) {
       const file = await cloud.downloadFile({ fileID })
       if (file.fileContent.length > 4 * 1024 * 1024) {
         return { ok: false, msg: '图片过大，请压缩后重试' }
       }
-      content.push({
-        type: 'image_url',
-        image_url: { url: `data:image/jpeg;base64,${file.fileContent.toString('base64')}` }
-      })
+      imageUrls.push(`data:image/jpeg;base64,${file.fileContent.toString('base64')}`)
     }
-    const userText = `${buildPetText(petProfile)}\n\n用户描述：${question || '（仅上传了照片，请结合照片分析）'}`
-    content.push({ type: 'text', text: userText })
 
-    // 依次尝试候选模型：单图模型只取第一张图
-    let lastErr = null
-    for (const model of MODELS) {
-      try {
-        const res = await callZhipu({
-          model,
-          messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user', content: model === 'glm-4v-flash' ? content.slice(0, 1).concat(content.slice(-1)) : content }
-          ],
-          temperature: 0.2,
-          max_tokens: 1024
-        })
-        const data = parseJson(res.choices[0].message.content)
-        return {
-          ok: true,
-          model,
-          data: {
-            level: data.level || 'yellow',
-            summary: toText(data.summary),
-            content: buildContent(data),
-            followUp: (Array.isArray(data.followUp) ? data.followUp : []).map(toText).filter(Boolean).slice(0, 3)
+    // 情感分析：识别焦虑语气
+    const mood = analyzeSentiment(question).mood
+
+    const userText = `${buildPetText(petProfile)}\n\n用户描述：${question || '（仅上传了照片，请结合照片分析）'}`
+    const sysPrompt = buildSystemPrompt(imageUrls.length > 0, mood)
+
+    // ---- 带图：视觉模型多模态（OCR/图像识别），不走工具调用 ----
+    if (imageUrls.length) {
+      const content = imageUrls.map(url => ({ type: 'image_url', image_url: { url } }))
+      content.push({ type: 'text', text: userText })
+
+      let lastErr = null
+      for (const model of VISION_MODELS) {
+        try {
+          const res = await callZhipu({
+            model,
+            messages: [
+              { role: 'system', content: sysPrompt },
+              {
+                role: 'user',
+                content:
+                  model === 'glm-4v-flash'
+                    ? content.slice(0, 1).concat(content.slice(-1))
+                    : content
+              }
+            ],
+            temperature: 0.2,
+            max_tokens: 1024
+          })
+          const data = parseJson(res.choices[0].message.content)
+          return {
+            ok: true,
+            model,
+            data: {
+              level: data.level || 'yellow',
+              summary: toText(data.summary),
+              content: buildContent(data),
+              followUp: (Array.isArray(data.followUp) ? data.followUp : []).map(toText).filter(Boolean).slice(0, 3)
+            }
           }
+        } catch (e) {
+          lastErr = e
+          console.error(`[assistant] ${model} 调用失败:`, e && e.message)
         }
-      } catch (e) {
-        lastErr = e
-        console.error(`[assistant] ${model} 调用失败:`, e && e.message)
+      }
+      throw lastErr || new Error('模型调用失败')
+    }
+
+    // ---- 纯文本：Agent 工具调用循环（glm-4-flash 支持 Function Calling） ----
+    const messages = [
+      { role: 'system', content: sysPrompt },
+      { role: 'user', content: userText }
+    ]
+    let finalContent = ''
+    for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+      const res = await callZhipu({
+        model: TEXT_MODEL,
+        messages,
+        tools: TOOLS,
+        temperature: 0.2,
+        max_tokens: 1024
+      })
+      const msg = res.choices[0].message
+      // 模型请求调用工具：本地执行后把结果回填，继续下一轮
+      if (msg.tool_calls && msg.tool_calls.length) {
+        messages.push({ role: 'assistant', content: msg.content || '', tool_calls: msg.tool_calls })
+        for (const tc of msg.tool_calls) {
+          let result
+          try {
+            const args = JSON.parse(tc.function.arguments || '{}')
+            result = await runTool(tc.function.name, args)
+            console.log('[assistant] 工具调用', tc.function.name, JSON.stringify(result).slice(0, 200))
+          } catch (e) {
+            result = { ok: false, msg: String((e && e.message) || e) }
+          }
+          messages.push({
+            role: 'tool',
+            tool_call_id: tc.id,
+            content: JSON.stringify(result).slice(0, 3000)
+          })
+        }
+        continue
+      }
+      finalContent = msg.content || ''
+      break
+    }
+
+    let data
+    if (finalContent) {
+      data = parseJson(finalContent)
+    } else {
+      // 多轮工具调用后仍未产出结论：返回兜底结构
+      data = {
+        level: 'yellow',
+        summary: '本次分析未能完成',
+        analysis: 'AI 在获取资料后未能得出结论，请补充更详细的描述后重试。',
+        diseases: [],
+        care: [],
+        visit: '如症状持续或加重，请及时就医。',
+        forbid: [],
+        followUp: ['请补充更详细的症状描述']
       }
     }
-    throw lastErr || new Error('模型调用失败')
+
+    return {
+      ok: true,
+      model: TEXT_MODEL,
+      data: {
+        level: data.level || 'yellow',
+        summary: toText(data.summary),
+        content: buildContent(data),
+        followUp: (Array.isArray(data.followUp) ? data.followUp : []).map(toText).filter(Boolean).slice(0, 3)
+      }
+    }
   } catch (e) {
     console.error('[assistant]', e)
     return {

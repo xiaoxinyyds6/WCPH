@@ -109,6 +109,13 @@ const OFFICIAL_FALLBACK = [
 ]
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '问诊广场 · 养宠人的经验交流社区', path: '/pages/square/square' }
+  },
+  onShareTimeline() {
+    return { title: '问诊广场 · 养宠人的经验交流社区' }
+  },
   data: {
     logged: false,
     posts: [],
@@ -247,6 +254,11 @@ Page({
     this.setData({ feed, menuId: '' })
     wx.pageScrollTo({ scrollTop: 0, duration: 0 })
     this.refresh()
+  },
+
+  // 进入搜索页
+  onSearchTap() {
+    wx.navigateTo({ url: '/pages/searchPosts/searchPosts' })
   },
 
   refresh() {

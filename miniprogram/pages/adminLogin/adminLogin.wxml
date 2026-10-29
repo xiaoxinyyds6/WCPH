@@ -12,7 +12,8 @@
     </view>
     <view class="field last">
       <text class="label">密码</text>
-      <input class="input" password placeholder="请输入密码" placeholder-class="ph" value="{{password}}" bindinput="onPasswordInput" bindconfirm="doLogin" />
+      <input class="input" password="{{!showPwd}}" placeholder="请输入密码" placeholder-class="ph" value="{{password}}" bindinput="onPasswordInput" bindconfirm="doLogin" />
+      <text class="pwd-eye" bindtap="togglePwd">{{showPwd ? '🙈' : '👁'}}</text>
     </view>
   </view>
 

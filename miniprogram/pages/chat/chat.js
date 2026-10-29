@@ -19,6 +19,13 @@ const HOSPITALS = [
 ]
 
 Page({
+  // ===== 分享给好友 / 朋友圈（聊天页分享落到问诊入口） =====
+  onShareAppMessage() {
+    return { title: 'AI宠物问诊 · 描述症状即可获得初步评估', path: '/pages/consult/consult' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物问诊 · 描述症状即可获得初步评估' }
+  },
   data: {
     pets: [],
     petIndex: -1,
@@ -59,7 +66,7 @@ Page({
     try {
       const wi = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
       this.setData({ statusBarHeight: wi.statusBarHeight || 20 })
-      wx.setNavigationBarColor({ frontColor: '#ffffff', backgroundColor: '#6C8CFF' })
+      wx.setNavigationBarColor({ frontColor: '#ffffff', backgroundColor: '#6CBFB5' })
     } catch (e) {
       this.setData({ statusBarHeight: 20 })
     }
@@ -67,6 +74,10 @@ Page({
     this._pendingMedia = getApp()._chatDraftMedia = getApp()._chatDraftMedia || { images: [], video: '' }
     this.setData({ pendingImages: this._pendingMedia.images, pendingVideo: this._pendingMedia.video })
     this._pendingSessionId = (options && options.sessionId) || ''
+    // 问诊方式归类：只有拍照问诊报告流程显式传 mode=photo；
+    // 聊天页（文字问诊入口及其他入口）产生的记录一律归「文字图片问诊记录」，无论聊天中是否带图片
+    const mode = options && options.mode
+    this._consultMode = mode === 'photo' ? 'photo' : 'text'
     // 问诊表单跳转：结构化描述文本预填输入框（auto=1 时自动发送）
     const draftText = (options && options.text) || getApp()._chatDraftText || ''
     if (draftText) {
@@ -91,7 +102,7 @@ Page({
         'AI 助手仅提供初步健康评估与护理建议，不构成诊断、不开具处方，不能替代执业兽医的现场诊疗。急症请立即前往宠物医院。继续使用即表示您已了解并同意。',
       confirmText: '同意',
       cancelText: '不同意',
-      confirmColor: '#5B7CFA',
+      confirmColor: '#5FA8A0',
       success: res => {
         if (res.confirm) {
           wx.setStorageSync('disclaimer_agreed_v1', true)
@@ -350,7 +361,7 @@ Page({
       role: 'ai',
       content:
         greet +
-        '\n\n✨ 您还可以：\n· 点击右上角 📁 随时切换或新建问诊记录；\n· 点 ✏️ 给本次问诊命名，方便以后查找；\n· 点 📤 可把这次问诊脱敏后发布到问诊广场求助。\n\n🚨 如遇呼吸困难、大出血、误食毒物、抽搐等危急情况，请立即送医！',
+        '\n\n✨ 您还可以：\n· 按住输入栏 🎙 说话，松开自动转文字；\n· 上传化验单/病历照片，AI 会先提取图中文字再逐项解读；\n· 点击右上角 📁 随时切换或新建问诊记录；\n· 点 📤 可把这次问诊脱敏后发布到问诊广场求助。\n\n🚨 如遇呼吸困难、大出血、误食毒物、抽搐等危急情况，请立即送医！',
       timeText: hm(),
       _k: this.nextKey()
     }
@@ -535,7 +546,7 @@ Page({
                     wx.showToast({ title: '已发布，但记录状态同步失败', icon: 'none' })
                   })
                 }
-                wx.showToast({ title: '已发布到广场', icon: 'success' })
+                wx.showToast({ title: '已提交，待管理员审核', icon: 'success' })
               })
               .catch(err => {
                 wx.hideLoading()
@@ -600,6 +611,11 @@ Page({
         scrollTo: 'bottom-anchor'
       })
     }
+    wx.showToast({
+      title: '切换宠物成功',
+      icon: 'none',
+      duration: 2000
+    })
   },
 
   onAddPet() {
@@ -719,7 +735,8 @@ Page({
       messages: msgs,
       petId: pet._id || '',
       petName: pet.name || '',
-      petAvatar: pet.avatarIsImage ? '' : pet.avatar || ''
+      petAvatar: pet.avatarIsImage ? '' : pet.avatar || '',
+      consultType: this._consultMode || ''
     }
 
     // 串行化，避免连续发送时重复创建记录

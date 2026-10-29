@@ -6,6 +6,8 @@
       <view class="r-info">
         <view class="r-title ellipsis">{{item.title}}</view>
         <view class="r-desc">{{item.petKind}}{{item.petBreed ? ' · ' + item.petBreed : ''}} · {{item.timeText}}</view>
+        <view wx:if="{{item.audit === 'pending'}}" class="audit-tag pending">⏳ 待管理员审核</view>
+        <view wx:elif="{{item.audit === 'rejected'}}" class="audit-tag rejected">✕ {{item.rejectReason || '未通过审核，未公开展示'}}</view>
       </view>
       <text class="del-link" data-id="{{item._id}}" catchtap="onDelete">删除</text>
     </view>

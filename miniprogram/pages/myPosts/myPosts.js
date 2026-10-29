@@ -4,6 +4,13 @@ const util = require('../../utils/util')
 const KIND_EMOJI = { 猫: '🐱', 狗: '🐶', 兔: '🐰', 鸟: '🐦', 仓鼠: '🐹', 乌龟: '🐢' }
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '问诊广场 · 每个铲屎官的实用经验', path: '/pages/square/square' }
+  },
+  onShareTimeline() {
+    return { title: '问诊广场 · 每个铲屎官的实用经验' }
+  },
   data: {
     posts: [],
     loading: true
@@ -49,7 +56,7 @@ Page({
     wx.showModal({
       title: '删除帖子',
       content: '确定删除该帖子吗？删除后不可恢复。',
-      confirmColor: '#FF5A5F',
+      confirmColor: '#D9534F',
       success: res => {
         if (!res.confirm) return
         wx.showLoading({ title: '删除中' })

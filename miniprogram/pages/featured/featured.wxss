@@ -1,7 +1,7 @@
 .page {
   min-height: 100vh;
   padding: 0 32rpx calc(40rpx + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, #FFF4E3 0%, #F5F6FA 320rpx);
+  background: linear-gradient(180deg, #FBF3E2 0%, #FAF8F5 320rpx);
 }
 
 /* ===== 主视觉横幅 ===== */
@@ -11,8 +11,8 @@
   margin: 24rpx 0 0;
   padding: 48rpx 40rpx;
   border-radius: 32rpx;
-  background: linear-gradient(135deg, #2B2E8C 0%, #5B4BDB 45%, #8A5BFF 100%);
-  box-shadow: 0 16rpx 40rpx rgba(91, 75, 219, 0.35);
+  background: linear-gradient(135deg, #2F3A3F 0%, #8B7BD8 45%, #A78BFA 100%);
+  box-shadow: 0 16rpx 40rpx rgba(139, 123, 216, 0.35);
 }
 
 .hero-deco {
@@ -41,7 +41,7 @@
   height: 80rpx;
   top: 40rpx;
   left: 46%;
-  background: rgba(255, 216, 100, 0.25);
+  background: rgba(232, 196, 104, 0.25);
 }
 
 .hero-icon {
@@ -73,21 +73,21 @@
 
 /* 前三名金色/银/铜边框 */
 .post.top1 {
-  border: 2rpx solid #FFD76A;
-  box-shadow: 0 10rpx 30rpx rgba(255, 190, 70, 0.28);
-  background: linear-gradient(180deg, #FFFDF4 0%, #FFFFFF 100%);
+  border: 2rpx solid #E8C468;
+  box-shadow: 0 10rpx 30rpx rgba(230, 162, 60, 0.28);
+  background: linear-gradient(180deg, #FBF6E8 0%, #FFFFFF 100%);
 }
 
 .post.top2 {
-  border: 2rpx solid #C9D3E3;
+  border: 2rpx solid #CFDAD9;
   box-shadow: 0 8rpx 26rpx rgba(150, 165, 190, 0.25);
-  background: linear-gradient(180deg, #FBFCFE 0%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #FAF8F5 0%, #FFFFFF 100%);
 }
 
 .post.top3 {
-  border: 2rpx solid #E9B98A;
+  border: 2rpx solid #F2B880;
   box-shadow: 0 8rpx 26rpx rgba(215, 150, 90, 0.22);
-  background: linear-gradient(180deg, #FFF9F2 0%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #FAF8F5 0%, #FFFFFF 100%);
 }
 
 .rank-badge {
@@ -150,7 +150,7 @@
   margin-left: 12rpx;
   padding: 2rpx 14rpx;
   border-radius: 999rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
   color: var(--text-light);
   font-size: 20rpx;
 }
@@ -160,11 +160,11 @@
   margin-left: 12rpx;
   padding: 8rpx 20rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #FF7A45 0%, #FF4D6D 100%);
+  background: linear-gradient(135deg, #D9534F 0%, #D9534F 100%);
   color: #fff;
   font-size: 22rpx;
   font-weight: 700;
-  box-shadow: 0 6rpx 16rpx rgba(255, 90, 100, 0.35);
+  box-shadow: 0 6rpx 16rpx rgba(217, 83, 79, 0.35);
 }
 
 .p-excerpt {
@@ -179,7 +179,7 @@
   height: 320rpx;
   margin-top: 20rpx;
   border-radius: 16rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
 }
 
 .p-foot {
@@ -188,7 +188,7 @@
   justify-content: space-between;
   margin-top: 24rpx;
   padding-top: 20rpx;
-  border-top: 2rpx solid #F5F6FA;
+  border-top: 2rpx solid #FAF8F5;
 }
 
 .p-time {
@@ -209,7 +209,7 @@
 }
 
 .p-act.liked {
-  color: #E5484D;
+  color: #D9534F;
 }
 
 .empty {

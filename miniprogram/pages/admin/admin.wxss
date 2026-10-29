@@ -10,11 +10,37 @@
 
 .tab {
   flex: 1;
-  text-align: center;
-  padding: 16rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  padding: 12rpx 0;
   border-radius: 20rpx;
-  font-size: 28rpx;
+  /* 6 个标签并排，缩小字号避免换行 */
+  font-size: 24rpx;
   color: var(--text-sub);
+}
+
+/* 导航栏数字徽标：红色圆框，文字在上数字在下 */
+.tab-badge {
+  min-width: 30rpx;
+  height: 30rpx;
+  padding: 0 10rpx;
+  border-radius: 999rpx;
+  background: #D9534F;
+  color: #fff;
+  font-size: 20rpx;
+  line-height: 30rpx;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* 无数字 tab 的透明占位，保证所有标签文字等高对齐 */
+.tab-badge.ghost {
+  background: transparent;
+  color: transparent;
+  min-width: 22rpx;
+  padding: 0;
 }
 
 .tab.active {
@@ -68,14 +94,14 @@
   margin-left: 12rpx;
   padding: 4rpx 16rpx;
   border-radius: 999rpx;
-  background: #FFF6E5;
-  color: #C77800;
+  background: #FBF3E2;
+  color: #B8772B;
   font-size: 20rpx;
 }
 
 .a-status.ok {
-  background: #E8F6EE;
-  color: #3BA05F;
+  background: #EAF4EE;
+  color: #4CAF7D;
 }
 
 .a-actions {
@@ -83,13 +109,25 @@
   justify-content: flex-end;
   margin-top: 18rpx;
   padding-top: 18rpx;
-  border-top: 2rpx solid #F0F1F5;
+  border-top: 2rpx solid #F7F3EC;
+}
+
+/* 知识条目内容预览（最多两行） */
+.a-content {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .a-btn {
   padding: 8rpx 28rpx;
   border-radius: 999rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
   color: var(--text-sub);
   font-size: 24rpx;
   margin-left: 16rpx;
@@ -102,8 +140,23 @@
 }
 
 .a-btn.danger {
-  background: #FFF0F0;
+  background: #FAEDED;
   color: var(--danger);
+}
+
+.a-btn.pass {
+  background: #EAF4EE;
+  color: #4CAF7D;
+  font-weight: 600;
+}
+
+/* 审核卡片中的帖子正文预览 */
+.audit-excerpt {
+  margin: 12rpx 0 4rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+  word-break: break-all;
 }
 
 /* 账号管理表单 */
@@ -122,7 +175,42 @@
   display: flex;
   align-items: center;
   height: 96rpx;
-  border-bottom: 2rpx solid #F0F1F5;
+  border-bottom: 2rpx solid #F7F3EC;
+}
+
+/* 官方好帖：物种选择 */
+.kind-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  padding: 20rpx 0 8rpx;
+}
+
+.kind-chip {
+  padding: 10rpx 30rpx;
+  border-radius: 999rpx;
+  background: #F7F3EC;
+  color: var(--text-sub);
+  font-size: 26rpx;
+}
+
+.kind-chip.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* 官方好帖：正文 */
+.off-textarea {
+  width: 100%;
+  min-height: 200rpx;
+  margin-top: 20rpx;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  background: #FAF8F5;
+  font-size: 27rpx;
+  color: var(--text-main);
+  box-sizing: border-box;
 }
 
 .acc-label {
@@ -138,7 +226,7 @@
 }
 
 .ph {
-  color: #C2C6D0;
+  color: #C7D2D2;
 }
 
 .acc-add {

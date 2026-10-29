@@ -1,0 +1,38 @@
+<view class="page {{selecting ? 'is-selecting' : ''}}">
+  <view wx:if="{{selecting}}" class="manage-row">
+    <text class="manage-cancel" bindtap="onToggleSelectMode">取消</text>
+  </view>
+  <text
+    wx:if="{{!selecting && posts.length}}"
+    class="delete-entry"
+    aria-label="删除点赞记录"
+    bindtap="onToggleSelectMode"
+  >🗑</text>
+
+  <view wx:if="{{loading}}" class="empty">加载中…</view>
+  <block wx:elif="{{posts.length}}">
+    <view
+      class="rec-card card {{selecting && item.selected ? 'selected' : ''}}"
+      wx:for="{{posts}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      bindtap="onPostTap"
+    >
+      <view wx:if="{{selecting}}" class="select-indicator {{item.selected ? 'checked' : ''}}">{{item.selected ? '✓' : ''}}</view>
+      <view class="r-avatar">{{item.kindEmoji}}</view>
+      <view class="r-info">
+        <view class="r-title-line">
+          <text class="r-title ellipsis">{{item.title}}</text>
+          <text wx:if="{{item.official}}" class="official-badge">官方</text>
+        </view>
+        <view class="r-desc">{{item.petKind}}{{item.petBreed ? ' · ' + item.petBreed : ''}} · {{item.timeText}}</view>
+      </view>
+      <text wx:if="{{!selecting}}" class="r-arrow">›</text>
+    </view>
+  </block>
+  <view wx:else class="empty">{{mode === 'fav' ? '还没有收藏的帖子，去问诊广场点 ☆ 收藏吧' : '还没有点赞的帖子，去问诊广场逛逛吧'}}</view>
+
+  <view wx:if="{{selecting}}" class="delete-bar">
+    <button class="delete-btn" disabled="{{!selectedIds.length || deleting}}" bindtap="onDeleteSelected">{{deleting ? '删除中…' : '删除' + (selectedIds.length ? '（' + selectedIds.length + '）' : '')}}</button>
+  </view>
+</view>

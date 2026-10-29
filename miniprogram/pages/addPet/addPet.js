@@ -9,6 +9,13 @@ function isImageUrl(a) {
 }
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '来给毛孩子建立健康档案吧', path: '/pages/mine/mine' }
+  },
+  onShareTimeline() {
+    return { title: '来给毛孩子建立健康档案吧' }
+  },
   data: {
     id: '',
     isEdit: false,
@@ -272,7 +279,7 @@ Page({
     wx.showModal({
       title: '删除宠物',
       content: '确定删除该宠物信息吗？此操作不可恢复。',
-      confirmColor: '#FF5A5F',
+      confirmColor: '#D9534F',
       success: res => {
         if (!res.confirm) return
         wx.showLoading({ title: '删除中' })

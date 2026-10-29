@@ -46,6 +46,24 @@ function list() {
   }
 }
 
+function remove(ids) {
+  if (!Array.isArray(ids) || !ids.length) return
+  try {
+    const removing = {}
+    ids.forEach(id => {
+      removing[id] = true
+    })
+    const storedIds = wx.getStorageSync(KEY)
+    const nextIds = Array.isArray(storedIds) ? storedIds.filter(id => !removing[id]) : []
+    const map = wx.getStorageSync(MAP_KEY) || {}
+    ids.forEach(id => {
+      delete map[id]
+    })
+    wx.setStorageSync(KEY, nextIds)
+    wx.setStorageSync(MAP_KEY, map)
+  } catch (e) {}
+}
+
 function clear() {
   try {
     wx.removeStorageSync(KEY)
@@ -53,4 +71,4 @@ function clear() {
   } catch (e) {}
 }
 
-module.exports = { record, list, clear }
+module.exports = { record, list, remove, clear }

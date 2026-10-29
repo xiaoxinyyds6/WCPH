@@ -4,6 +4,13 @@ const KINDS = ['猫', '狗', '兔', '鸟', '仓鼠', '其他']
 const MAX_EXCERPT = 120
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '宠物健康自查 · 按部位快速问诊', path: '/pages/topic/topic' }
+  },
+  onShareTimeline() {
+    return { title: '宠物健康自查 · 按部位快速问诊' }
+  },
   data: {
     kinds: KINDS,
     petKind: '猫',
@@ -11,7 +18,39 @@ Page({
     excerpt: '',
     count: 0,
     maxExcerpt: MAX_EXCERPT,
-    submitting: false
+    submitting: false,
+    // 编辑模式：从消息中心/帖子详情进入修改待审核帖子
+    editId: ''
+  },
+
+  onLoad(options) {
+    const id = options && options.id
+    if (!id) return
+    wx.showLoading({ title: '加载中' })
+    cloud
+      .squareGet(id)
+      .then(post => {
+        wx.hideLoading()
+        // 仅作者本人且帖子处于待审核/未通过状态时可编辑
+        if (!post || !post.mine || post.audit === 'approved') {
+          wx.showToast({ title: '仅待审核或未通过的帖子可以修改', icon: 'none' })
+          setTimeout(() => wx.navigateBack(), 900)
+          return
+        }
+        const excerpt = String(post.excerpt || '').slice(0, MAX_EXCERPT)
+        this.setData({
+          editId: id,
+          petKind: KINDS.indexOf(post.petKind) >= 0 ? post.petKind : '其他',
+          title: post.title || '',
+          excerpt,
+          count: excerpt.length
+        })
+      })
+      .catch(err => {
+        wx.hideLoading()
+        cloud.toastError(err)
+        setTimeout(() => wx.navigateBack(), 900)
+      })
   },
 
   onKind(e) {
@@ -42,14 +81,20 @@ Page({
       return
     }
     this.setData({ submitting: true })
-    cloud
-      .squarePublish({ petKind: this.data.petKind, petBreed: '', title, excerpt })
+    const payload = { petKind: this.data.petKind, petBreed: '', title, excerpt }
+    const save = this.data.editId
+      ? cloud.squareEditPost(this.data.editId, payload)
+      : cloud.squarePublish(payload)
+    save
       .then(() => {
-        wx.showToast({ title: '发布成功', icon: 'success' })
+        wx.showToast({
+          title: this.data.editId ? '已修改，重新提交审核' : '已提交，待管理员审核',
+          icon: 'success'
+        })
         setTimeout(() => {
           if (getCurrentPages().length > 1) wx.navigateBack()
           else wx.switchTab({ url: '/pages/square/square' })
-        }, 600)
+        }, 900)
       })
       .catch(err => {
         this.setData({ submitting: false })

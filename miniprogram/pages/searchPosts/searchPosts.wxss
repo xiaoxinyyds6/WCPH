@@ -1,0 +1,148 @@
+.page {
+  min-height: 100vh;
+  padding: 24rpx 32rpx calc(40rpx + env(safe-area-inset-bottom));
+  background: var(--bg);
+}
+
+/* 搜索框 */
+.search-box {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 16rpx 12rpx 24rpx;
+  border-radius: 999rpx;
+}
+
+.s-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+}
+
+.s-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--text-main);
+}
+
+.s-ph {
+  color: #C7D2D2;
+}
+
+.s-clear {
+  padding: 8rpx 12rpx;
+  font-size: 26rpx;
+  color: var(--text-light);
+}
+
+.s-btn {
+  padding: 0 30rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  border-radius: 999rpx;
+  background: var(--primary);
+  color: #fff;
+  font-size: 26rpx;
+}
+
+.s-btn.disabled {
+  opacity: 0.6;
+}
+
+/* 结果提示 */
+.result-tip {
+  margin: 24rpx 8rpx 0;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+/* 结果卡片 */
+.result {
+  margin-top: 20rpx;
+  padding: 24rpx 28rpx;
+}
+
+.r-head {
+  display: flex;
+  align-items: center;
+}
+
+.r-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 20rpx;
+  background: var(--primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  margin-right: 16rpx;
+  flex: 0 0 auto;
+}
+
+.r-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.r-title-row {
+  display: flex;
+  align-items: center;
+}
+
+.r-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 29rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.r-badge {
+  flex: 0 0 auto;
+  margin-left: 12rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 20rpx;
+}
+
+.r-sub {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+
+.r-excerpt {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.r-foot {
+  display: flex;
+  gap: 28rpx;
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+
+/* 空态 */
+.search-tip {
+  text-align: center;
+  padding: 100rpx 0 60rpx;
+}
+
+.st-emoji {
+  font-size: 72rpx;
+}
+
+.st-text {
+  margin-top: 16rpx;
+  font-size: 25rpx;
+  color: var(--text-light);
+}

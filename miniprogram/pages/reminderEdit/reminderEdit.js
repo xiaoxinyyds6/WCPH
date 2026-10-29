@@ -17,7 +17,19 @@ function dueAtFromDate(dateStr) {
   return new Date(p[0], p[1] - 1, p[2], 9, 0, 0).getTime()
 }
 
+// 订阅消息模板 ID：微信公众平台 → 功能 → 订阅消息 → 选用"宠物提醒"类模板，
+// 把模板 ID 粘贴到这里（与 cloudfunctions/notify/index.js 的 TEMPLATE_ID 保持一致）。
+// 留空时保存提醒不请求订阅授权，静默跳过。
+const REMIND_TPL_ID = ''
+
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '疫苗驱虫提醒 · 养宠必备', path: '/pages/reminders/reminders' }
+  },
+  onShareTimeline() {
+    return { title: '疫苗驱虫提醒 · 养宠必备' }
+  },
   data: {
     id: '',
     isEdit: false,
@@ -157,6 +169,7 @@ Page({
       : cloud.addReminder(reminder)
     task
       .then(() => {
+        this.requestRemindSubscribe()
         wx.showToast({ title: '已保存', icon: 'success' })
         setTimeout(() => wx.navigateBack(), 600)
       })
@@ -166,11 +179,20 @@ Page({
       })
   },
 
+  // 订阅消息：请用户授权接收到期提醒（一次性订阅，每授权一次可下发一条）
+  requestRemindSubscribe() {
+    if (!REMIND_TPL_ID) return
+    wx.requestSubscribeMessage({
+      tmplIds: [REMIND_TPL_ID],
+      complete: () => {}
+    })
+  },
+
   onDelete() {
     wx.showModal({
       title: '删除提醒',
       content: '确定删除这条提醒吗？',
-      confirmColor: '#FF5A5F',
+      confirmColor: '#D9534F',
       success: res => {
         if (!res.confirm) return
         wx.showLoading({ title: '删除中' })

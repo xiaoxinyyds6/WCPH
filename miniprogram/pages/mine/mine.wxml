@@ -1,196 +1,110 @@
 <view class="page">
-  <!-- 顶部用户卡片 -->
-  <view class="user-card card" bindtap="onUserTap">
-    <view class="u-avatar {{logged ? '' : 'guest'}}">
-      <image wx:if="{{logged && user.avatarUrl}}" class="u-img" src="{{user.avatarUrl}}" mode="aspectFill"></image>
-      <text wx:else class="u-emoji">{{logged ? '🙂' : '👤'}}</text>
+  <!-- 顶部：渐变背景 + 用户信息 -->
+  <view class="hero">
+    <view class="hero-user" bindtap="onUserTap">
+      <view class="u-avatar">
+        <image wx:if="{{logged && user.avatarUrl}}" class="u-img" src="{{user.avatarUrl}}" mode="aspectFill"></image>
+        <text wx:else class="u-emoji">{{logged ? '🙂' : '👤'}}</text>
+      </view>
+      <view class="u-info">
+        <view class="u-name">{{logged ? user.nickname : '点击登录'}}</view>
+        <view class="u-status">{{logged ? (user.phone || '账号已登录') : '登录后体验完整功能'}}</view>
+      </view>
+      <text wx:if="{{logged}}" class="u-arrow">›</text>
     </view>
-    <view class="u-info">
-      <view class="u-name">{{logged ? user.nickname : '请先登录'}}</view>
-      <view class="u-status {{logged ? 'ok' : ''}}">{{logged ? '已登录' : '未登录'}}</view>
-    </view>
-    <text wx:if="{{!logged}}" class="u-arrow">›</text>
   </view>
 
-  <!-- 我的宠物 -->
-  <view class="pet-section card">
-    <view class="sec-head">
-      <text class="sec-title">我的宠物</text>
-    </view>
-
-    <view wx:if="{{!logged}}" class="empty">登录后查看宠物信息</view>
-    <block wx:elif="{{pets.length}}">
-      <view class="pet-slider">
-        <view wx:if="{{pets.length > 1}}" class="slider-arrow" bindtap="onPrevPet">‹</view>
-        <view class="pet-item" bindtap="onPetTap">
+  <view class="body">
+    <!-- 我的宠物（悬浮卡片） -->
+    <view class="section card pet-section">
+      <view class="sec-head">
+        <text class="sec-title">我的宠物</text>
+        <text wx:if="{{logged}}" class="sec-more" catchtap="onAddPet">＋ 添加宠物</text>
+      </view>
+      <view wx:if="{{logged && pets.length}}" class="pet-slider" bindtap="onPetTap">
+        <view wx:if="{{pets.length > 1}}" class="slider-arrow" catchtap="onPrevPet">‹</view>
+        <view class="pet-item">
           <view class="pc-head">
             <view class="pc-avatar">
               <image wx:if="{{currentPet.avatarIsImage}}" class="pc-img" src="{{currentPet.avatar}}" mode="aspectFill"></image>
               <text wx:else class="pc-emoji">{{currentPet.avatar || '🐾'}}</text>
             </view>
             <view class="pc-id">
-              <view class="pc-name ellipsis">{{currentPet.name}}</view>
-              <view class="pc-sub ellipsis">{{currentPet.category || '—'}}{{currentPet.breed ? ' · ' + currentPet.breed : ''}}</view>
+              <view class="pc-name">{{currentPet.name}}</view>
+              <view class="pc-sub">{{currentPet.category || ''}}{{currentPet.breed ? ' · ' + currentPet.breed : ''}}{{currentPet.ageText ? ' · ' + currentPet.ageText : ''}}</view>
             </view>
             <text class="pc-arrow">›</text>
           </view>
           <view class="pc-stats">
             <view class="pc-stat">
-              <view class="pc-stat-label">岁数</view>
-              <view class="pc-stat-value">{{currentPet.ageText || '—'}}</view>
-            </view>
-            <view class="pc-stat">
               <view class="pc-stat-label">体重</view>
-              <view class="pc-stat-value">{{currentPet.weight != null ? currentPet.weight + 'kg' : '—'}}</view>
+              <view class="pc-stat-value">{{currentPet.weight || '-'}}</view>
             </view>
             <view class="pc-stat">
               <view class="pc-stat-label">绝育</view>
-              <view class="pc-stat-value">{{currentPet.neutered || '—'}}</view>
+              <view class="pc-stat-value">{{currentPet.sterilized ? '已绝育' : '未绝育'}}</view>
             </view>
             <view class="pc-stat">
-              <view class="pc-stat-label">体态</view>
-              <view class="pc-stat-value">{{currentPet.body || '—'}}</view>
+              <view class="pc-stat-label">驱虫</view>
+              <view class="pc-stat-value">{{currentPet.dewormed || '未知'}}</view>
             </view>
           </view>
         </view>
-        <view wx:if="{{pets.length > 1}}" class="slider-arrow" bindtap="onNextPet">›</view>
+        <view wx:if="{{pets.length > 1}}" class="slider-arrow" catchtap="onNextPet">›</view>
       </view>
+      <view wx:if="{{logged && !pets.length}}" class="empty" catchtap="onAddPet">还没有添加宠物，点击这里创建 🐱🐶</view>
+      <view wx:if="{{!logged}}" class="empty" catchtap="onLoginGate">登录后管理你的宠物档案</view>
       <view wx:if="{{pets.length > 1}}" class="pet-dots">{{petIndex + 1}} / {{pets.length}}</view>
-    </block>
-    <view wx:else class="empty" bindtap="onAddPet">还没有添加宠物，点击这里去添加吧～</view>
-  </view>
-
-  <!-- 附近宠物医院 -->
-  <view class="hosp-entry card" bindtap="onHospitals">
-    <view class="he-icon">🏥</view>
-    <view class="he-body">
-      <view class="he-title">附近宠物医院</view>
-      <view class="he-sub">按距离排序 · 支持一键拨号与导航</view>
-    </view>
-    <text class="he-arrow">›</text>
-  </view>
-
-  <!-- 健康计划 -->
-  <view class="section">
-    <view class="sec-head">
-      <text class="sec-title">健康计划</text>
-      <text wx:if="{{logged}}" class="sec-more" bindtap="onRemindersTap">全部 ›</text>
     </view>
 
-    <view wx:if="{{!logged}}" class="empty card">登录后管理健康计划</view>
-    <block wx:elif="{{reminders.length}}">
-      <view class="rem-card card" wx:for="{{reminders}}" wx:key="_id" data-id="{{item._id}}" bindtap="onReminderTap">
-        <view class="rem-emoji">{{item.typeEmoji}}</view>
-        <view class="rem-info">
-          <view class="rem-title ellipsis">{{item.title}}</view>
-          <view class="rem-sub ellipsis">{{item.petName ? item.petName + ' · ' : ''}}{{item.typeLabel}}</view>
-        </view>
-        <view class="rem-due {{item.status === 'expired' ? 'danger' : ''}}">{{item.dueText}}</view>
+    <!-- 功能宫格 -->
+    <view class="grid card">
+      <view class="grid-item" bindtap="onMyPostsTap">
+        <view class="gi-icon">📝</view>
+        <view class="gi-label">我的发布</view>
       </view>
-    </block>
-    <view wx:else class="empty card" bindtap="onRemindersTap">暂无健康计划，点击新建提醒</view>
-  </view>
-
-  <!-- 问诊记录：仅展示最新一条，点击“全部”进入完整列表 -->
-  <view class="section">
-    <view class="sec-head">
-      <text class="sec-title">问诊记录</text>
-      <text wx:if="{{logged && records.length}}" class="sec-more" bindtap="onRecordsListTap">全部 ›</text>
-    </view>
-
-    <view wx:if="{{!logged}}" class="empty card">登录后查看问诊记录</view>
-    <block wx:elif="{{records.length}}">
-      <view class="rec-card card" data-id="{{records[0]._id}}" bindtap="onRecordTap">
-        <view class="r-avatar">{{records[0].petAvatar && !records[0].avatarIsImage ? records[0].petAvatar : '💬'}}</view>
-        <view class="r-info">
-          <view class="r-title-line">
-            <text class="r-title ellipsis">{{records[0].petName || records[0].title || '问诊记录'}}</text>
-            <text wx:if="{{records[0].published}}" class="r-badge">已发布</text>
-            <text wx:if="{{records[0].firstQuestion}}" class="r-question">{{records[0].firstQuestion}}</text>
-          </view>
-          <view class="r-desc">{{records[0].timeText}}</view>
-        </view>
-        <text class="r-arrow">›</text>
+      <view class="grid-item" bindtap="onFavTap">
+        <view class="gi-icon">⭐</view>
+        <view class="gi-label">我的收藏</view>
       </view>
-    </block>
-    <view wx:else class="empty card">暂无问诊记录</view>
-  </view>
-
-  <!-- 我的发布：仅展示最新一条，点击“全部”进入完整列表 -->
-  <view class="section">
-    <view class="sec-head">
-      <text class="sec-title">我的发布</text>
-      <text wx:if="{{logged && myPosts.length}}" class="sec-more" bindtap="onMyPostsListTap">全部 ›</text>
-    </view>
-
-    <view wx:if="{{!logged}}" class="empty card">登录后查看我的发布</view>
-    <block wx:elif="{{myPosts.length}}">
-      <view class="rec-card card" data-id="{{myPosts[0]._id}}" bindtap="onMyPostTap">
-        <view class="r-avatar">{{myPosts[0].petKind === '猫' ? '🐱' : myPosts[0].petKind === '狗' ? '🐶' : '🐾'}}</view>
-        <view class="r-info">
-          <view class="r-title-line">
-            <text class="r-title ellipsis">{{myPosts[0].title}}</text>
-          </view>
-          <view class="r-desc">{{myPosts[0].petKind}}{{myPosts[0].petBreed ? ' · ' + myPosts[0].petBreed : ''}} · {{myPosts[0].timeText}}</view>
-        </view>
-        <text class="r-arrow">›</text>
+      <view class="grid-item" bindtap="onLikedPostsTap">
+        <view class="gi-icon heart-icon">♥</view>
+        <view class="gi-label">我的点赞</view>
       </view>
-    </block>
-    <view wx:else class="empty card">还没有发布过内容，去广场发布吧</view>
-  </view>
-
-  <!-- 历史浏览记录：仅展示最新一条，点击“全部”进入完整列表 -->
-  <view class="section">
-    <view class="sec-head">
-      <text class="sec-title">历史浏览记录</text>
-      <text wx:if="{{logged && history.length}}" class="sec-more" bindtap="onHistoryTap">全部 ›</text>
-    </view>
-
-    <view wx:if="{{!logged}}" class="empty card">登录后查看浏览记录</view>
-    <block wx:elif="{{history.length}}">
-      <view class="rec-card card" data-id="{{history[0]._id}}" bindtap="onHistoryItemTap">
-        <view class="r-avatar">{{history[0].kindEmoji}}</view>
-        <view class="r-info">
-          <view class="r-title ellipsis">{{history[0].title}}</view>
-          <view class="r-desc">{{history[0].petKind}}{{history[0].petBreed ? ' · ' + history[0].petBreed : ''}} · 浏览于 {{history[0].timeText}}</view>
-        </view>
-        <text class="r-arrow">›</text>
+      <view class="grid-item" bindtap="onHistoryTap">
+        <view class="gi-icon">🕘</view>
+        <view class="gi-label">历史浏览</view>
       </view>
-    </block>
-    <view wx:else class="empty card">暂无浏览记录，去广场逛逛吧</view>
-  </view>
-
-  <!-- 我的收藏 -->
-  <view class="section">
-    <view class="sec-head">
-      <text class="sec-title">我的收藏</text>
     </view>
 
-    <view wx:if="{{!logged}}" class="empty card">登录后查看收藏</view>
-    <block wx:elif="{{favPosts.length}}">
-      <view class="rec-card card" wx:for="{{favPosts}}" wx:key="_id" data-id="{{item._id}}" bindtap="onFavPostTap">
-        <view class="r-avatar">{{item.kindEmoji}}</view>
-        <view class="r-info">
-          <view class="r-title-line">
-            <text class="r-title ellipsis">{{item.title}}</text>
-          </view>
-          <view class="r-desc">{{item.petKind}}{{item.breedText}} · {{item.timeText}}</view>
-        </view>
-        <text class="del-link" data-id="{{item._id}}" catchtap="onFavPostRemove">取消收藏</text>
+    <!-- 服务列表 -->
+    <view class="menu card">
+      <view class="menu-item" bindtap="onRemindersTap">
+        <text class="mi-icon">⏰</text>
+        <text class="mi-label">健康计划</text>
+        <text class="mi-sub">疫苗 / 驱虫 / 洗护提醒</text>
+        <text class="mi-arrow">›</text>
       </view>
-    </block>
-    <view wx:else class="empty card">还没有收藏的帖子，去广场点 ☆ 收藏吧</view>
-  </view>
-
-  <!-- 菜单 -->
-  <view wx:if="{{logged}}" class="menu card">
-    <view class="menu-item" bindtap="onSettingsTap">
-      <text class="mi-icon">⚙️</text>
-      <text class="mi-label">设置与协议</text>
-      <text class="mi-arrow">›</text>
+      <view class="menu-item" bindtap="onRecordsListTap">
+        <text class="mi-icon">🩺</text>
+        <text class="mi-label">问诊记录</text>
+        <text class="mi-sub">历史问诊与报告</text>
+        <text class="mi-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="onHospitals">
+        <text class="mi-icon">🏥</text>
+        <text class="mi-label">附近宠物医院</text>
+        <text class="mi-sub">按距离排序 · 支持导航</text>
+        <text class="mi-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="onSettingsTap">
+        <text class="mi-icon">⚙️</text>
+        <text class="mi-label">设置与协议</text>
+        <text class="mi-arrow">›</text>
+      </view>
     </view>
-  </view>
 
-  <button wx:if="{{logged}}" class="logout" bindtap="onLogout">退出登录</button>
-  <view class="bottom-space"></view>
+    <button wx:if="{{logged}}" class="logout" bindtap="onLogout">退出登录</button>
+    <view class="bottom-space"></view>
+  </view>
 </view>

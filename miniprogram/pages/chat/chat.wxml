@@ -163,7 +163,7 @@
       bindinput="onInput"
       bindconfirm="send"
       confirm-type="send"
-      placeholder="描述症状，发送即可开始问诊…"
+      placeholder="描述宠物症状…"
       placeholder-class="ph"
       adjust-position="{{true}}"
       cursor-spacing="20"

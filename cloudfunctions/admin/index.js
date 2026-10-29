@@ -50,11 +50,15 @@ exports.main = async (event) => {
       const username = String(event.username || '').trim()
       const password = String(event.password || '')
       const nickname = String(event.nickname || '').trim().slice(0, 20)
-      if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-        return { ok: false, msg: '账号需为3-20位字母/数字/下划线' }
+      if (!/^1[3-9]\d{9}$/.test(username)) {
+        return { ok: false, msg: '请输入正确的11位手机号' }
       }
-      if (password.length < 6) {
-        return { ok: false, msg: '密码至少6位' }
+      if (
+        password.length < 8 ||
+        password.length > 14 ||
+        !/^(?=.*[A-Za-z])(?=.*\d)\S+$/.test(password)
+      ) {
+        return { ok: false, msg: '密码需为8-14位，且同时包含英文和数字' }
       }
       await ensureCollection(ACCOUNTS)
       const exist = await db
@@ -63,7 +67,7 @@ exports.main = async (event) => {
         .limit(1)
         .get()
       if (exist.data.length) {
-        return { ok: false, msg: '该账号已存在' }
+        return { ok: false, msg: '该手机号已被注册，无法重复添加' }
       }
       const salt = crypto.randomBytes(8).toString('hex')
       const res = await db.collection(ACCOUNTS).add({

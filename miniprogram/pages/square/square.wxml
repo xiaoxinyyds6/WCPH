@@ -12,13 +12,12 @@
       <view class="p-meta">
         <view class="p-title-row">
           <text class="p-title ellipsis">{{item.title}}</text>
-          <text wx:if="{{item.mine}}" class="my-tag">我</text>
+          <text wx:if="{{item.mine && !item.official}}" class="my-tag">我</text>
           <text wx:if="{{item.official}}" class="official-badge">官方</text>
         </view>
         <view class="p-sub">
           {{item.petKind}}{{item.breedText}}
           <text wx:if="{{item.part && item.part !== '其他' && !item.official}}" class="part-tag">{{item.part}}</text>
-          <text wx:if="{{item.demo}}" class="demo-tag">示例</text>
         </view>
       </view>
       <text wx:if="{{!featured && item.fromConsult}}" class="p-tag">来自在线问诊</text>
@@ -43,7 +42,7 @@
         </view>
         <view class="p-act">💬 {{item.commentCount}}</view>
         <view
-          wx:if="{{showFav && !item.mine && !item.official}}"
+          wx:if="{{showFav && !item.mine}}"
           class="p-act fav {{item.fav ? 'fav-on' : ''}}"
           data-id="{{item._id}}"
           catchtap="onFav"
@@ -82,9 +81,15 @@
     </view>
   </view>
 
-  <view wx:if="{{tab === 'hall'}}" class="feed-tabs">
-    <view class="feed-tab {{feed === 'recommend' ? 'active' : ''}}" data-feed="recommend" bindtap="onFeedTab">推荐</view>
-    <view class="feed-tab {{feed === 'latest' ? 'active' : ''}}" data-feed="latest" bindtap="onFeedTab">最新</view>
+  <view wx:if="{{tab === 'hall'}}" class="hall-top">
+    <view class="search-bar" bindtap="onSearchTap">
+      <text class="search-icon">🔍</text>
+      <text class="search-ph">搜索帖子标题 / 内容关键词</text>
+    </view>
+    <view class="feed-tabs">
+      <view class="feed-tab {{feed === 'recommend' ? 'active' : ''}}" data-feed="recommend" bindtap="onFeedTab">推荐</view>
+      <view class="feed-tab {{feed === 'latest' ? 'active' : ''}}" data-feed="latest" bindtap="onFeedTab">最新</view>
+    </view>
   </view>
 
   <!-- ===== 问诊大厅 ===== -->
@@ -139,7 +144,7 @@
       wx:for="{{officialPosts}}"
       wx:key="_id"
       is="postCard"
-      data="{{item: item, menuId: menuId, highlightId: highlightId, showMore: false, showFav: false, featured: false, index: index}}"
+      data="{{item: item, menuId: menuId, highlightId: highlightId, showMore: false, showFav: true, featured: false, index: index}}"
     ></template>
 
     <view wx:if="{{officialPosts.length}}" class="load-more">— 官方好帖 · 宠物养护小知识 —</view>

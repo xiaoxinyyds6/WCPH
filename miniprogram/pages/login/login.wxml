@@ -5,7 +5,7 @@
     <view class="slogan">智能守护每一位毛孩子</view>
   </view>
 
-  <button class="btn-primary wx-login" open-type="getPhoneNumber" bindgetphonenumber="onGetPhone">微信授权登录</button>
+  <button class="btn-primary wx-quick" bindtap="onWxLoginTap">微信授权登录</button>
 
   <view class="divider">
     <view class="line"></view>
@@ -39,20 +39,46 @@
   <!-- 账号密码登录（账号由管理员创建） -->
   <view wx:else class="form card">
     <view class="field">
-      <text class="label">账号</text>
-      <input class="input" placeholder="请输入账号" placeholder-class="ph" value="{{username}}" bindinput="onUsernameInput" />
+      <text class="label">手机号</text>
+      <input class="input" type="number" maxlength="11" placeholder="请输入手机号" placeholder-class="ph" value="{{username}}" bindinput="onUsernameInput" />
     </view>
     <view class="field">
       <text class="label">密码</text>
-      <input class="input" password placeholder="请输入密码" placeholder-class="ph" value="{{password}}" bindinput="onPasswordInput" />
+      <input class="input" password="{{!showPwd}}" placeholder="请输入密码" placeholder-class="ph" value="{{password}}" bindinput="onPasswordInput" />
+      <text class="pwd-eye" bindtap="togglePwd">{{showPwd ? '🙈' : '👁'}}</text>
     </view>
-    <view class="account-tip">没有账号？请联系管理员为您添加</view>
+    <view class="account-actions">
+      <text class="account-action" bindtap="onForgotPassword">忘记密码</text>
+      <text class="account-hint">如果第一次登录该小程序，先使用验证码登录注册密码</text>
+    </view>
   </view>
 
   <button wx:if="{{loginTab === 'phone'}}" class="btn-primary submit" loading="{{saving}}" bindtap="doLogin">登录</button>
   <button wx:else class="btn-primary submit" loading="{{saving}}" bindtap="doAccountLogin">登录</button>
 
-  <view wx:if="{{loginTab === 'phone'}}" class="demo-login" bindtap="demoLogin">演示登录（跳过验证）›</view>
   <view class="admin-login" bindtap="onAdminLogin">管理员登录 ›</view>
-  <view class="agreement">登录即代表同意《用户协议》与《隐私政策》</view>
+  <view class="agreement">
+    <view class="checkbox agreement-checkbox {{agreed ? 'checked' : ''}}" catchtap="onToggleAgreement">{{agreed ? '✓' : ''}}</view>
+    <text class="agreement-text">我已阅读并同意</text>
+    <text class="agreement-link" catchtap="onOpenAgreement" data-type="user">《用户协议》</text>
+    <text class="agreement-text">与</text>
+    <text class="agreement-link" catchtap="onOpenAgreement" data-type="privacy">《隐私政策》</text>
+  </view>
+</view>
+
+<!-- 用户协议 / 隐私政策弹窗 -->
+<view wx:if="{{showAgreement}}" class="agreement-mask" catchtap="onAgreementReject">
+  <view class="agreement-dialog" catchtap="noop">
+    <view class="ad-title">{{agreementType === 'user' ? '用户协议' : '隐私政策'}}</view>
+    <scroll-view class="ad-body" scroll-y>
+      <view wx:for="{{agreementSections}}" wx:key="h" class="ad-section">
+        <view class="ad-h">{{item.h}}</view>
+        <view class="ad-p">{{item.p}}</view>
+      </view>
+    </scroll-view>
+    <view class="ad-actions">
+      <view class="ad-btn reject" bindtap="onAgreementReject">拒绝</view>
+      <view class="ad-btn accept" bindtap="onAgreementAccept">我同意</view>
+    </view>
+  </view>
 </view>

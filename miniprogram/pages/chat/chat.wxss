@@ -7,7 +7,7 @@
 
 /* 自定义导航栏（主题蓝紫渐变） */
 .navbar {
-  background: linear-gradient(135deg, #6C8CFF 0%, #9B7BFF 100%);
+  background: linear-gradient(135deg, #6CBFB5 0%, #A78BFA 100%);
   z-index: 10;
 }
 
@@ -87,17 +87,17 @@
 .sheet-title {
   font-size: 34rpx;
   font-weight: 700;
-  color: #2B2F3A;
+  color: #2F3A3F;
 }
 
 .sheet-sub {
   font-size: 23rpx;
-  color: #9AA0AC;
+  color: #6B7A80;
   margin-top: 6rpx;
 }
 
 .sheet-new {
-  background: linear-gradient(135deg, #6C8CFF 0%, #9B7BFF 100%);
+  background: linear-gradient(135deg, #6CBFB5 0%, #A78BFA 100%);
   color: #fff;
   text-align: center;
   padding: 24rpx;
@@ -113,7 +113,7 @@
 
 .sheet-item {
   padding: 22rpx;
-  border: 2rpx solid #EEF0F6;
+  border: 2rpx solid #F3F8F7;
   border-radius: 20rpx;
   margin-bottom: 14rpx;
 }
@@ -128,13 +128,13 @@
   flex: 1;
   font-size: 28rpx;
   font-weight: 600;
-  color: #2B2F3A;
+  color: #2F3A3F;
 }
 
 .si-badge {
   font-size: 20rpx;
-  color: #5B7CFA;
-  background: #EEF2FF;
+  color: #5FA8A0;
+  background: #EDF5F3;
   padding: 4rpx 12rpx;
   border-radius: 10rpx;
   margin-left: 12rpx;
@@ -142,13 +142,13 @@
 
 .si-sub {
   font-size: 22rpx;
-  color: #9AA0AC;
+  color: #6B7A80;
   margin-top: 8rpx;
 }
 
 .sheet-empty {
   text-align: center;
-  color: #B0B6C3;
+  color: #A9B6B9;
   font-size: 24rpx;
   padding: 30rpx;
 }
@@ -186,9 +186,9 @@
   min-width: 0;
   margin: 0 16rpx;
   padding: 24rpx;
-  border: 2rpx solid #EEF2F8;
+  border: 2rpx solid #F3F8F7;
   border-radius: 24rpx;
-  background: linear-gradient(180deg, #FBFCFF 0%, #F5F7FE 100%);
+  background: linear-gradient(180deg, #FAF8F5 0%, #FAF8F5 100%);
 }
 
 .pc-head {
@@ -201,8 +201,8 @@
   height: 96rpx;
   border-radius: 28rpx;
   background: #fff;
-  border: 2rpx solid #EEF2F8;
-  box-shadow: 0 4rpx 14rpx rgba(91, 124, 250, 0.10);
+  border: 2rpx solid #F3F8F7;
+  box-shadow: 0 4rpx 14rpx rgba(95, 168, 160, 0.10);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -242,7 +242,7 @@
   display: flex;
   margin-top: 20rpx;
   padding-top: 18rpx;
-  border-top: 2rpx solid #EEF2F8;
+  border-top: 2rpx solid #F3F8F7;
 }
 
 .pc-stat {
@@ -252,7 +252,7 @@
 }
 
 .pc-stat + .pc-stat {
-  border-left: 2rpx solid #EEF2F8;
+  border-left: 2rpx solid #F3F8F7;
 }
 
 .pc-stat-label {
@@ -290,13 +290,13 @@
   flex-basis: 100%;
   margin-top: 6rpx;
   font-size: 20rpx;
-  color: #C2C6D0;
+  color: #C7D2D2;
 }
 
 .saved-tag {
   font-size: 22rpx;
-  color: #2BB673;
-  background: #E7F7EF;
+  color: #4CAF7D;
+  background: #EAF4EE;
   padding: 6rpx 18rpx;
   border-radius: 999rpx;
 }
@@ -359,7 +359,7 @@
 }
 
 .msg.user .bubble {
-  background: linear-gradient(135deg, #6C8CFF 0%, #9B7BFF 100%);
+  background: linear-gradient(135deg, #6CBFB5 0%, #A78BFA 100%);
   color: #fff;
   border-top-right-radius: 6rpx;
 }
@@ -410,7 +410,7 @@
 .shoot-tip {
   padding: 0 28rpx 10rpx;
   background: #fff;
-  color: #9AA0AC;
+  color: #6B7A80;
   font-size: 22rpx;
   line-height: 1.6;
 }
@@ -421,7 +421,7 @@
   align-items: center;
   padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
   background: #fff;
-  border-top: 2rpx solid #F0F1F5;
+  border-top: 2rpx solid #F7F3EC;
 }
 
 .camera-btn {
@@ -429,7 +429,7 @@
   height: 76rpx;
   flex: 0 0 76rpx;
   border-radius: 50%;
-  background: #F2F3F7;
+  background: #F7F3EC;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -440,14 +440,14 @@
 .msg-input {
   flex: 1;
   height: 76rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
   border-radius: 999rpx;
   padding: 0 30rpx;
   font-size: 28rpx;
 }
 
 .ph {
-  color: #C2C6D0;
+  color: #C7D2D2;
 }
 
 .send-btn {
@@ -457,14 +457,14 @@
   height: 76rpx;
   line-height: 76rpx;
   border-radius: 999rpx;
-  background: #E2E5EE;
+  background: #E3ECEA;
   color: #fff;
   font-size: 28rpx;
   font-weight: 600;
 }
 
 .send-btn.active {
-  background: linear-gradient(135deg, #6C8CFF 0%, #9B7BFF 100%);
+  background: linear-gradient(135deg, #6CBFB5 0%, #A78BFA 100%);
 }
 
 .inputbar .msg-input {
@@ -500,7 +500,7 @@
   margin: 0 0 12rpx 0;
   align-self: center;
   border-radius: 50%;
-  border: 2rpx dashed #B9C0FF;
+  border: 2rpx dashed #8ECAE6;
   background: var(--primary-soft);
   color: var(--primary);
   font-size: 40rpx;
@@ -510,7 +510,7 @@
 }
 
 .video-chip {
-  background: #2B2F3A;
+  background: #2F3A3F;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -587,12 +587,12 @@
 }
 
 .urgency.red {
-  background: linear-gradient(135deg, #FFECEC 0%, #FFD9D9 100%);
-  border: 2rpx solid #FFB3B3;
+  background: linear-gradient(135deg, #FAEDED 0%, #F5D8D6 100%);
+  border: 2rpx solid #E5A5A3;
 }
 
 .urgency.red .urgency-label {
-  color: #E5484D;
+  color: #D9534F;
 }
 
 /* 红色预警：跳转附近医院的小按钮（预警标题右侧） */
@@ -602,39 +602,39 @@
   padding: 4rpx 18rpx;
   border-radius: 999rpx;
   background: #fff;
-  border: 2rpx solid #FFB3B3;
-  color: #E5484D;
+  border: 2rpx solid #E5A5A3;
+  color: #D9534F;
   font-size: 22rpx;
   font-weight: 600;
 }
 
 .urgency-hosp:active {
-  background: #FFF0F0;
+  background: #FAEDED;
 }
 
 .urgency.yellow {
-  background: linear-gradient(135deg, #FFF6E5 0%, #FFEAC7 100%);
-  border: 2rpx solid #FFD591;
+  background: linear-gradient(135deg, #FBF3E2 0%, #FBF3E2 100%);
+  border: 2rpx solid #F2CFA0;
 }
 
 .urgency.yellow .urgency-label {
-  color: #C77800;
+  color: #B8772B;
 }
 
 .urgency.green {
-  background: linear-gradient(135deg, #E9F9F0 0%, #D9F4E5 100%);
-  border: 2rpx solid #A8E6C3;
+  background: linear-gradient(135deg, #EAF4EE 0%, #D8EEE2 100%);
+  border: 2rpx solid #BFE3D2;
 }
 
 .urgency.green .urgency-label {
-  color: #1F9D63;
+  color: #4CAF7D;
 }
 
 .urgency-call {
   margin-top: 14rpx;
   height: 72rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #FF5A5F 0%, #FF7A45 100%);
+  background: linear-gradient(135deg, #D9534F 0%, #D9534F 100%);
   color: #fff;
   font-size: 28rpx;
   font-weight: 600;

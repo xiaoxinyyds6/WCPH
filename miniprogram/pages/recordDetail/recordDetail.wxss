@@ -48,7 +48,7 @@
   display: flex;
   align-items: flex-start;
   padding: 24rpx 0;
-  border-bottom: 2rpx solid #F0F1F5;
+  border-bottom: 2rpx solid #F7F3EC;
 }
 
 .line:last-child {
@@ -73,7 +73,7 @@
 }
 
 .line.user .line-avatar {
-  background: #EAF7EF;
+  background: #EAF4EE;
 }
 
 .avatar-img {
@@ -122,21 +122,21 @@
 }
 
 .urgency-badge.red {
-  background: #FFECEC;
-  color: #E5484D;
-  border: 2rpx solid #FFB3B3;
+  background: #FAEDED;
+  color: #D9534F;
+  border: 2rpx solid #E5A5A3;
 }
 
 .urgency-badge.yellow {
-  background: #FFF6E5;
-  color: #C77800;
-  border: 2rpx solid #FFD591;
+  background: #FBF3E2;
+  color: #B8772B;
+  border: 2rpx solid #F2CFA0;
 }
 
 .urgency-badge.green {
-  background: #E9F9F0;
-  color: #1F9D63;
-  border: 2rpx solid #A8E6C3;
+  background: #EAF4EE;
+  color: #4CAF7D;
+  border: 2rpx solid #BFE3D2;
 }
 
 .line.ai .line-name {
@@ -145,8 +145,8 @@
 }
 
 .line.user .line-name {
-  background: #EAF7EF;
-  color: #2BB673;
+  background: #EAF4EE;
+  color: #4CAF7D;
 }
 
 .line.user .urgency-badge {
@@ -175,7 +175,7 @@
   width: 120rpx;
   height: 120rpx;
   border-radius: 14rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
 }
 
 .msg-video {
@@ -209,7 +209,7 @@
   border-radius: 999rpx;
   font-size: 30rpx;
   line-height: 2.8;
-  border: 2rpx solid #FFD9DA;
+  border: 2rpx solid #F5D8D6;
 }
 
 .btn-danger::after {

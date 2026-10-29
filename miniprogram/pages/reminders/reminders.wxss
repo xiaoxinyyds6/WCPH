@@ -61,7 +61,7 @@
 }
 
 .rem-card.expired {
-  border: 2rpx solid #FFE1E2;
+  border: 2rpx solid #FAEDED;
 }
 
 .rem-card.done {
@@ -116,12 +116,12 @@
 }
 
 .r-status.ok {
-  background: #E8F6EE;
-  color: #3BA05F;
+  background: #EAF4EE;
+  color: #4CAF7D;
 }
 
 .r-status.skip {
-  background: #F2F3F7;
+  background: #F7F3EC;
   color: var(--text-sub);
 }
 
@@ -151,13 +151,13 @@
   justify-content: flex-end;
   margin-top: 20rpx;
   padding-top: 20rpx;
-  border-top: 2rpx solid #F0F1F5;
+  border-top: 2rpx solid #F7F3EC;
 }
 
 .act-btn {
   padding: 8rpx 28rpx;
   border-radius: 999rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
   color: var(--text-sub);
   font-size: 24rpx;
   margin-left: 16rpx;
@@ -170,6 +170,6 @@
 }
 
 .act-btn.danger {
-  background: #FFF0F0;
+  background: #FAEDED;
   color: var(--danger);
 }

@@ -37,14 +37,18 @@ module.exports = {
 
   // ===== 登录 =====
   smsLogin: (phone, code) => call('login', { action: 'smsLogin', phone, code }),
-  phoneLogin: cloudID => call('login', { action: 'phoneLogin', cloudID }),
+  verifyCode: (phone, code, purpose) => call('login', { action: 'verifyCode', phone, code, purpose }),
+  setPassword: (phone, code, password, mode) =>
+    call('login', { action: 'setPassword', phone, code, password, mode }),
   sendCode: phone => call('login', { action: 'sendCode', phone }),
+  checkPhoneRegistered: phone => call('login', { action: 'checkPhoneRegistered', phone }),
   updateProfile: (nickname, avatarUrl) =>
     call('login', { action: 'updateProfile', nickname, avatarUrl }),
   // 账号密码登录（账号由管理员创建）
   accountLogin: (username, password) =>
     call('login', { action: 'accountLogin', username, password }),
-  // 管理员登录
+  // 微信一键登录：纯 openid 建立账户，无需手机号
+  wxLogin: () => call('login', { action: 'wxLogin' }),
   adminLogin: (username, password) =>
     call('login', { action: 'adminLogin', username, password }),
 
@@ -76,27 +80,34 @@ module.exports = {
 
   // ===== AI 问诊助手 =====
   assistantAsk: (question, petProfile, fileIDs) =>
-    call('assistant', { question, petProfile, fileIDs }, 20000),
+    call('assistant', { question, petProfile, fileIDs }, 30000),
 
   // ===== 问诊广场 =====
   squareList: (page, feed, feedSeed) => call('square', { action: 'list', page, feed, feedSeed }),
+  squareSearch: keyword => call('square', { action: 'search', keyword }),
   squareFeatured: () => call('square', { action: 'featured' }),
   squareOfficial: () => call('square', { action: 'officialList' }),
   squareGet: id => call('square', { action: 'get', id }),
   squareMine: () => call('square', { action: 'mylist' }),
   squareFavlist: ids => call('square', { action: 'favlist', ids }),
+  squareLiked: () => call('square', { action: 'likedList' }),
   squareLike: id => call('square', { action: 'like', id }),
   squareComment: (id, content) => call('square', { action: 'comment', id, content }),
   squareDeleteComment: (id, commentId) => call('square', { action: 'deleteComment', id, commentId }),
   squarePublish: post => call('square', { action: 'publish', post }),
+  squareEditPost: (id, post) => call('square', { action: 'editPost', id, post }),
   squareRemove: id => call('square', { action: 'remove', id }),
   squareReport: (id, type, reason, commentId) =>
     call('square', { action: 'report', id, type, reason, commentId }),
   squareAmIAdmin: () => call('square', { action: 'amIAdmin' }),
   squareAdminPosts: () => call('square', { action: 'adminPosts' }),
   squareAdminRemove: id => call('square', { action: 'adminRemove', id }),
+  squareAdminPublishOfficial: post => call('square', { action: 'adminPublishOfficial', post }),
+  squareAdminPendingList: () => call('square', { action: 'adminPendingList' }),
+  squareAdminAudit: (id, result) => call('square', { action: 'adminAudit', id, result }),
   squareAdminReports: () => call('square', { action: 'adminReports' }),
-  squareAdminHandleReport: id => call('square', { action: 'adminHandleReport', id }),
+  squareAdminHandleReport: (id, remove, reason) =>
+    call('square', { action: 'adminHandleReport', id, remove: remove === true, reason: String(reason || '').slice(0, 200) }),
   squareNotifications: () => call('square', { action: 'notifications' }),
   squareReadNotifications: ids => call('square', { action: 'readNotifications', ids }),
   squareUnread: () => call('square', { action: 'unread' }),

@@ -52,6 +52,23 @@
   flex: 0 0 16rpx;
 }
 
+/* "审核中"状态徽标 */
+.m-status {
+  margin-left: 14rpx;
+  flex: 0 0 auto;
+  padding: 2rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(230, 162, 60, 0.14);
+  color: var(--warning);
+  font-size: 20rpx;
+  font-weight: 600;
+}
+
+/* 审核中消息卡片整体浅琥珀底，与普通消息区分 */
+.msg.auditing {
+  background: #FDF6EC;
+}
+
 .m-post {
   margin-top: 6rpx;
   font-size: 24rpx;

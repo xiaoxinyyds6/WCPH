@@ -1,17 +1,17 @@
 /* 全局样式与设计变量 */
 page {
-  --primary: #5B7CFA;
-  --primary-light: #8AA0FF;
-  --primary-soft: #EEF2FF;
-  --text-main: #1F2430;
-  --text-sub: #6B7280;
-  --text-light: #9AA0AC;
-  --bg: #F5F6FA;
+  --primary: #5FA8A0;
+  --primary-light: #8ECAE6;
+  --primary-soft: #EDF5F3;
+  --text-main: #2F3A3F;
+  --text-sub: #6B7A80;
+  --text-light: #6B7A80;
+  --bg: #FAF8F5;
   --card: #FFFFFF;
-  --danger: #FF5A5F;
-  --warn: #FF9F43;
+  --danger: #D9534F;
+  --warn: #E6A23C;
   --radius: 24rpx;
-  --shadow: 0 8rpx 30rpx rgba(91, 124, 250, 0.08);
+  --shadow: 0 8rpx 30rpx rgba(95, 168, 160, 0.08);
 
   background-color: var(--bg);
   color: var(--text-main);
@@ -73,4 +73,28 @@ view, text, scroll-view, navigator, button, input, textarea, image {
   color: var(--text-light);
   font-size: 26rpx;
   padding: 80rpx 0;
+}
+
+/* 密码框可见性切换按钮 */
+.pwd-eye {
+  flex: 0 0 auto;
+  padding: 16rpx 8rpx 16rpx 20rpx;
+  font-size: 34rpx;
+  line-height: 1;
+}
+
+/* 密码强度提示 */
+.pwd-strength {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 4rpx 10rpx;
+  font-size: 22rpx;
+}
+
+.pwd-strength.warn {
+  color: #E6A23C;
+}
+
+.pwd-strength.good {
+  color: #07C160;
 }

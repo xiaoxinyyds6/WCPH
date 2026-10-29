@@ -41,6 +41,6 @@
   </view>
 
   <button class="submit {{submitting ? 'disabled' : ''}}" bindtap="onSubmit">
-    {{submitting ? '发布中…' : '发布求助'}}
+    {{submitting ? '提交中…' : (editId ? '保存修改' : '发布求助')}}
   </button>
 </view>

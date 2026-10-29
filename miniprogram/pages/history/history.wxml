@@ -1,23 +1,35 @@
-<view class="page">
-  <view wx:if="{{list.length}}" class="clear-row">
-    <text class="clear-link" bindtap="onClear">清空浏览记录</text>
+<view class="page {{selecting ? 'is-selecting' : ''}}">
+  <view wx:if="{{list.length || selecting}}" class="manage-row">
+    <text wx:if="{{!selecting}}" class="clear-link" bindtap="onClear">清空</text>
+    <text wx:else class="manage-cancel" bindtap="onToggleSelectMode">取消</text>
   </view>
+  <text
+    wx:if="{{!selecting && list.length}}"
+    class="delete-entry"
+    aria-label="删除历史浏览记录"
+    bindtap="onToggleSelectMode"
+  >🗑</text>
 
   <block wx:if="{{list.length}}">
     <view
-      class="rec-card card"
+      class="rec-card card {{selecting && item.selected ? 'selected' : ''}}"
       wx:for="{{list}}"
       wx:key="_id"
       data-id="{{item._id}}"
       bindtap="onTap"
     >
+      <view wx:if="{{selecting}}" class="select-indicator {{item.selected ? 'checked' : ''}}">{{item.selected ? '✓' : ''}}</view>
       <view class="r-avatar">{{item.kindEmoji}}</view>
       <view class="r-info">
         <view class="r-title ellipsis">{{item.title}}</view>
         <view class="r-desc">{{item.petKind}}{{item.petBreed ? ' · ' + item.petBreed : ''}} · 浏览于 {{item.timeText}}</view>
       </view>
-      <text class="r-arrow">›</text>
+      <text wx:if="{{!selecting}}" class="r-arrow">›</text>
     </view>
   </block>
   <view wx:else class="empty">暂无浏览记录，去问诊广场逛逛吧</view>
+
+  <view wx:if="{{selecting}}" class="delete-bar">
+    <button class="delete-btn" disabled="{{!selectedIds.length || deleting}}" bindtap="onDeleteSelected">删除{{selectedIds.length ? '（' + selectedIds.length + '）' : ''}}</button>
+  </view>
 </view>

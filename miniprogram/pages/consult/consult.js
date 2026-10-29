@@ -6,7 +6,30 @@ function isImageUrl(a) {
   return typeof a === 'string' && /^(cloud:\/\/|https?:\/\/|\/|wxfile:\/\/)/.test(a)
 }
 
+// 首页涉及宠物资料和问诊的功能：未登录时先询问，再由用户决定是否前往登录
+function ensureLogin() {
+  if (getApp().isLoggedIn()) return true
+  wx.showModal({
+    title: '登录过期',
+    content: '为了账户安全，请重新登录',
+    cancelText: '稍后',
+    confirmText: '立即登录',
+    confirmColor: '#5FA8A0',
+    success: res => {
+      if (res.confirm) wx.navigateTo({ url: '/pages/login/login' })
+    }
+  })
+  return false
+}
+
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: 'AI宠物问诊 · 24小时在线守护毛孩子', path: '/pages/consult/consult' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物问诊 · 24小时在线守护毛孩子' }
+  },
   data: {
     pets: [],
     loading: false,
@@ -68,12 +91,12 @@ Page({
       wx.showToast({ title: '宠物位置已满，无法继续添加', icon: 'none' })
       return
     }
-    if (!getApp().requireLogin()) return
+    if (!ensureLogin()) return
     wx.navigateTo({ url: '/pages/addPet/addPet' })
   },
 
   onPetTap(e) {
-    if (!getApp().requireLogin()) return
+    if (!ensureLogin()) return
     const id = e.currentTarget.dataset.id
     // 删除模式下点击宠物：弹窗确认后删除
     if (this.data.deleteMode) {
@@ -84,7 +107,7 @@ Page({
         content: '确认删除该宠物吗？',
         confirmText: '确认',
         cancelText: '取消',
-        confirmColor: '#FF5A5F',
+        confirmColor: '#D9534F',
         success: res => {
           if (!res.confirm) return
           wx.showLoading({ title: '删除中', mask: true })
@@ -109,7 +132,7 @@ Page({
 
   // 删除按钮：切换删除模式（显示/隐藏宠物头像右上角的删除徽标）
   onDeletePet() {
-    if (!getApp().requireLogin()) return
+    if (!ensureLogin()) return
     if (!this.data.pets.length) {
       wx.showToast({ title: '暂无宠物可删除', icon: 'none' })
       return
@@ -119,13 +142,13 @@ Page({
 
   // 症状拍照问诊：结构化表单 + 拍照 → AI 分诊报告
   onSymptomForm() {
-    if (!getApp().requireLogin()) return
+    if (!ensureLogin()) return
     wx.navigateTo({ url: '/pages/consultForm/consultForm' })
   },
 
   onTextConsult() {
-    if (!getApp().requireLogin()) return
-    wx.navigateTo({ url: '/pages/chat/chat' })
+    if (!ensureLogin()) return
+    wx.navigateTo({ url: '/pages/chat/chat?mode=text' })
   },
 
   // 宠物急救指南（离线版）

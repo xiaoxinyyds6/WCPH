@@ -1,7 +1,7 @@
 .login {
   min-height: 100vh;
   padding: 60rpx 48rpx calc(40rpx + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, #EEF2FF 0%, #F5F6FA 40%);
+  background: linear-gradient(180deg, #EDF5F3 0%, #FAF8F5 40%);
 }
 
 .brand {
@@ -14,12 +14,12 @@
   height: 132rpx;
   margin: 0 auto 24rpx;
   border-radius: 36rpx;
-  background: linear-gradient(135deg, #6C8CFF 0%, #9B7BFF 100%);
+  background: linear-gradient(135deg, #6CBFB5 0%, #A78BFA 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 68rpx;
-  box-shadow: 0 12rpx 30rpx rgba(91, 124, 250, 0.3);
+  box-shadow: 0 12rpx 30rpx rgba(95, 168, 160, 0.3);
 }
 
 .app-name {
@@ -36,7 +36,7 @@
 
 .wx-login {
   width: 100%;
-  box-shadow: 0 10rpx 26rpx rgba(91, 124, 250, 0.3);
+  box-shadow: 0 10rpx 26rpx rgba(95, 168, 160, 0.3);
 }
 
 .divider {
@@ -48,7 +48,7 @@
 .divider .line {
   flex: 1;
   height: 2rpx;
-  background: #E2E5EE;
+  background: #E3ECEA;
 }
 
 .divider-text {
@@ -65,7 +65,7 @@
   display: flex;
   align-items: center;
   height: 108rpx;
-  border-bottom: 2rpx solid #F0F1F5;
+  border-bottom: 2rpx solid #F7F3EC;
 }
 
 .field:last-of-type {
@@ -85,7 +85,7 @@
 }
 
 .ph {
-  color: #C2C6D0;
+  color: #C7D2D2;
 }
 
 .code-btn {
@@ -102,7 +102,7 @@
 
 .code-btn.disabled {
   color: var(--text-light);
-  background: #F0F1F5;
+  background: #F7F3EC;
 }
 
 .remember {
@@ -115,7 +115,7 @@
   width: 36rpx;
   height: 36rpx;
   border-radius: 8rpx;
-  border: 2rpx solid #D5D8E0;
+  border: 2rpx solid #D8E0DE;
   margin-right: 16rpx;
   color: #fff;
   font-size: 24rpx;
@@ -139,18 +139,109 @@
   margin-top: 48rpx;
 }
 
-.demo-login {
-  text-align: center;
-  font-size: 26rpx;
-  color: var(--primary);
-  margin-top: 28rpx;
+.agreement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 32rpx;
 }
 
-.agreement {
-  text-align: center;
+.agreement-checkbox {
+  flex: 0 0 36rpx;
+  margin-right: 12rpx;
+}
+
+.agreement-text {
+  color: var(--text-sub);
   font-size: 22rpx;
-  color: var(--text-light);
-  margin-top: 32rpx;
+  line-height: 1.5;
+}
+
+/* 协议链接：蓝色可点击 */
+.agreement-link {
+  color: #4a90d9;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+/* ===== 协议弹窗 ===== */
+.agreement-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(47, 58, 63, 0.55);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  box-sizing: border-box;
+}
+
+.agreement-dialog {
+  width: 620rpx;
+  background: #ffffff;
+  border-radius: 28rpx;
+  overflow: hidden;
+}
+
+.ad-title {
+  padding: 36rpx 32rpx 8rpx;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.ad-body {
+  /* 小程序 scroll-view 必须显式高度，不能用 flex 撑开 */
+  height: 52vh;
+  padding: 20rpx 32rpx;
+  box-sizing: border-box;
+}
+
+.ad-section {
+  margin-bottom: 24rpx;
+}
+
+.ad-h {
+  font-size: 27rpx;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8rpx;
+}
+
+.ad-p {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--text-sub);
+  text-align: justify;
+}
+
+.ad-actions {
+  display: flex;
+  border-top: 1rpx solid #eef2f1;
+}
+
+.ad-btn {
+  flex: 1;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+}
+
+.ad-btn.reject {
+  color: var(--text-sub);
+  border-right: 1rpx solid #eef2f1;
+}
+
+.ad-btn.accept {
+  color: var(--primary);
+  font-weight: 700;
 }
 
 /* 登录方式切换 */
@@ -175,11 +266,24 @@
   font-weight: 600;
 }
 
-.account-tip {
-  padding: 20rpx 0 16rpx;
-  font-size: 24rpx;
-  color: var(--text-light);
-  text-align: center;
+.account-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 4rpx 16rpx;
+}
+
+.account-action {
+  color: var(--primary);
+  font-size: 26rpx;
+}
+
+.account-hint {
+  color: #6B7A80;
+  font-size: 20rpx;
+  text-align: right;
+  flex: 1;
+  margin-left: 16rpx;
 }
 
 .admin-login {
@@ -187,4 +291,12 @@
   margin-top: 28rpx;
   font-size: 26rpx;
   color: var(--text-sub);
+}
+
+/* 微信一键登录入口：与登录主按钮同款（蓝底白字），强制单行 */
+.wx-quick {
+  margin-top: 28rpx;
+  white-space: nowrap;
+  padding-left: 12rpx;
+  padding-right: 12rpx;
 }

@@ -31,6 +31,12 @@ Page({
     this.load()
   },
 
+  // 作者修改待审核/未通过的帖子 → 跳转发帖页编辑模式
+  onEditPost() {
+    if (!this.data.mine || !this.data.post || this.data.post.audit === 'approved') return
+    wx.navigateTo({ url: '/pages/topic/topic?id=' + this.data.id })
+  },
+
   load(silent) {
     const id = this.data.id
     if (!id) return
@@ -205,7 +211,7 @@ Page({
     wx.showModal({
       title: '删除帖子',
       content: '确定删除该帖子吗？删除后不可恢复。',
-      confirmColor: '#FF5A5F',
+      confirmColor: '#D9534F',
       success: res => {
         if (!res.confirm) return
         wx.showLoading({ title: '删除中' })
@@ -229,6 +235,14 @@ Page({
     return {
       title: post.title || '宠物问诊求助',
       path: '/pages/postDetail/postDetail?id=' + this.data.id
+    }
+  },
+
+  onShareTimeline() {
+    const post = this.data.post || {}
+    return {
+      title: post.title || '宠物问诊求助',
+      query: 'id=' + this.data.id
     }
   }
 })

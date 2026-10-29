@@ -109,7 +109,7 @@ Page({
                     wx.showToast({ title: '已发布，但记录状态同步失败', icon: 'none' })
                   })
                 }
-                wx.showToast({ title: '已发布到广场', icon: 'success' })
+                wx.showToast({ title: '已提交，待管理员审核', icon: 'success' })
               })
               .catch(err => {
                 wx.hideLoading()
@@ -126,7 +126,7 @@ Page({
     wx.showModal({
       title: '删除记录',
       content: '确定删除这条问诊记录吗？',
-      confirmColor: '#FF5A5F',
+      confirmColor: '#D9534F',
       success: res => {
         if (!res.confirm) return
         wx.showLoading({ title: '删除中' })
@@ -151,6 +151,14 @@ Page({
     return {
       title: (rec.petName ? rec.petName + ' · ' : '') + (rec.title || 'AI 分诊报告'),
       path: '/pages/recordDetail/recordDetail?id=' + this.data.id
+    }
+  },
+
+  onShareTimeline() {
+    const rec = this.data.record || {}
+    return {
+      title: (rec.petName ? rec.petName + ' · ' : '') + (rec.title || 'AI 分诊报告'),
+      query: 'id=' + this.data.id
     }
   }
 })

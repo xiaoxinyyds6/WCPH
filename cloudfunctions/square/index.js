@@ -62,7 +62,9 @@ async function ensureCollection() {
 
 // 给帖子作者新增一条通知（作者本人操作不通知，演示/官方数据不通知）
 async function addNotify(ownerOpenid, fromOpenid, data) {
-  if (!ownerOpenid || ownerOpenid === fromOpenid || ownerOpenid === 'demo' || ownerOpenid === 'official') return
+  if (!ownerOpenid || ownerOpenid === 'demo' || ownerOpenid === 'official') return
+  // 普通互动通知：自己操作自己的帖子不提醒；审核/下架类通知带 force 强制发送
+  if (!data.force && ownerOpenid === fromOpenid) return
   await db.collection(NOTIFY_COL).add({
     data: {
       _openid: ownerOpenid,
@@ -264,6 +266,22 @@ function shufflePosts(list, seed) {
   return result
 }
 
+// 拆分搜索关键词：按空格切分；无空格的长词拆成 2 字词组，便于命中中文长尾词
+function splitKeywords(raw) {
+  let keywords = String(raw || '')
+    .trim()
+    .split(/[\s,，、;；/|]+/)
+    .filter(Boolean)
+    .slice(0, 20)
+  if (keywords.length === 1 && keywords[0].length > 2) {
+    const w = keywords[0]
+    const grams = []
+    for (let i = 0; i + 2 <= w.length; i++) grams.push(w.slice(i, i + 2))
+    keywords = grams
+  }
+  return Array.from(new Set(keywords)).slice(0, 8)
+}
+
 exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext()
   const action = event.action
@@ -278,13 +296,16 @@ exports.main = async (event) => {
       let hasMore = false
       try {
         if (event.feed === 'recommend') {
-          const res = await col.where({ official: _.neq(true) }).limit(100).get()
+          const res = await col
+            .where({ official: _.neq(true), audit: _.nin(['pending', 'rejected']) })
+            .limit(100)
+            .get()
           const shuffled = shufflePosts(res.data, event.feedSeed)
           posts = shuffled.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
           hasMore = (page + 1) * PAGE_SIZE < shuffled.length
         } else {
           const res = await col
-            .where({ official: _.neq(true) })
+            .where({ official: _.neq(true), audit: _.nin(['pending', 'rejected']) })
             .orderBy('createdAt', 'desc')
             .skip(page * PAGE_SIZE)
             .limit(PAGE_SIZE)
@@ -316,7 +337,7 @@ exports.main = async (event) => {
           })
         }
         const res = await col
-          .where({ official: _.neq(true) })
+          .where({ official: _.neq(true), audit: _.nin(['pending', 'rejected']) })
           .orderBy('createdAt', 'desc')
           .skip(0)
           .limit(PAGE_SIZE)
@@ -329,6 +350,44 @@ exports.main = async (event) => {
       return { ok: true, data: { list: posts, page, hasMore } }
     }
 
+    // 搜索帖子：标题或正文命中任意关键词即召回；命中的关键词越多、标题命中权重越高越靠前
+    if (action === 'search') {
+      const keywords = splitKeywords(event.keyword)
+      if (!keywords.length) return { ok: true, data: [] }
+      let posts = []
+      try {
+        const res = await col.limit(1000).get()
+        posts = res.data
+      } catch (e) {
+        posts = []
+      }
+      const lowerKeywords = keywords.map(k => k.toLowerCase())
+      const AUDIT_BLOCK = ['pending', 'rejected']
+      const scored = posts
+        .filter(p => AUDIT_BLOCK.indexOf(p.audit) < 0)
+        .map(p => {
+          const title = String(p.title || '').toLowerCase()
+          const excerpt = String(p.excerpt || '').toLowerCase()
+          let score = 0
+          let hits = 0
+          lowerKeywords.forEach(k => {
+            const inTitle = title.indexOf(k) >= 0
+            const inExcerpt = excerpt.indexOf(k) >= 0
+            if (inTitle) score += 3
+            if (inExcerpt) score += 1
+            if (inTitle || inExcerpt) hits++
+          })
+          return Object.assign({}, p, { _score: score, _hits: hits })
+        })
+        .filter(p => p._score > 0)
+      // 相关度排序：命中关键词数多在前，同分时标题命中权重高在前，再按时间倒序
+      scored.sort(
+        (a, b) => b._hits - a._hits || b._score - a._score || (b.createdAt || 0) - (a.createdAt || 0)
+      )
+      const list = scored.slice(0, 50).map(p => Object.assign({}, p, { mine: p._openid === OPENID }))
+      return { ok: true, data: { list, keywords } }
+    }
+
     // 精选好帖：点赞数 ≥ 100，先按赞数、再按"到达该赞数的时间"（lastLikeAt）倒序：
     // 并列第一时，后达到该赞数的帖子排前面
     if (action === 'featured') {
@@ -336,7 +395,7 @@ exports.main = async (event) => {
       let posts = []
       try {
         const res = await col
-          .where({ official: _.neq(true), likeCount: _.gte(100) })
+          .where({ official: _.neq(true), audit: _.nin(['pending', 'rejected']), likeCount: _.gte(100) })
           .orderBy('likeCount', 'desc')
           .limit(100)
           .get()
@@ -380,6 +439,11 @@ exports.main = async (event) => {
       const res = await col.where({ _id: event.id }).limit(1).get()
       if (!res.data.length) return { ok: false, msg: '帖子不存在或已删除' }
       const doc = res.data[0]
+      // 待审核/未通过的帖子仅作者本人和管理员可见
+      const blocked = doc.audit === 'pending' || doc.audit === 'rejected'
+      if (blocked && doc._openid !== OPENID && !(await isAdmin(OPENID))) {
+        return { ok: false, msg: '帖子不存在或已删除' }
+      }
       const post = Object.assign({}, doc, { mine: doc._openid === OPENID })
       // 评论也由服务端标记是否本人（不依赖前端登录态）
       post.comments = (post.comments || []).map(c =>
@@ -393,6 +457,16 @@ exports.main = async (event) => {
         .where({ _openid: OPENID })
         .orderBy('createdAt', 'desc')
         .limit(50)
+        .get()
+      return { ok: true, data: res.data }
+    }
+
+    // 我的点赞：按当前账号读取点赞过的帖子，包括官方好帖
+    if (action === 'likedList') {
+      const res = await col
+        .where({ likes: OPENID })
+        .orderBy('createdAt', 'desc')
+        .limit(100)
         .get()
       return { ok: true, data: res.data }
     }
@@ -419,14 +493,32 @@ exports.main = async (event) => {
         .orderBy('createdAt', 'desc')
         .limit(50)
         .get()
-      const list = res.data
+      // 动态合成"审核中"消息：作者名下所有待审核帖子，审核通过/拒绝后自动消失（替换为审核结果通知）
+      const pend = await col
+        .where({ _openid: OPENID, audit: 'pending' })
+        .orderBy('createdAt', 'desc')
+        .limit(20)
+        .get()
+      const auditingMsgs = pend.data.map(p => ({
+        _id: 'auditing-' + p._id,
+        type: 'auditing',
+        postId: p._id,
+        postTitle: p.title,
+        content: '点击查看帖子，审核完成前可以修改内容',
+        read: false,
+        createdAt: p.createdAt || Date.now()
+      }))
+      const list = auditingMsgs.concat(res.data)
       return { ok: true, data: { list, unread: list.filter(n => !n.read).length } }
     }
 
     // 标记已读：传 ids 则按条，否则全部
     if (action === 'readNotifications') {
       const ncol = db.collection(NOTIFY_COL)
-      const ids = Array.isArray(event.ids) ? event.ids.filter(x => typeof x === 'string') : []
+      // 过滤掉动态合成的"审核中"消息（auditing- 前缀），它们没有真实文档
+      const ids = (Array.isArray(event.ids) ? event.ids.filter(x => typeof x === 'string') : []).filter(
+        x => !x.startsWith('auditing-')
+      )
       if (ids.length) {
         await ncol.where({ _openid: OPENID, _id: _.in(ids) }).update({ data: { read: true } })
       } else {
@@ -436,8 +528,12 @@ exports.main = async (event) => {
     }
 
     if (action === 'unread') {
-      const res = await db.collection(NOTIFY_COL).where({ _openid: OPENID, read: false }).count()
-      return { ok: true, data: { unread: res.total } }
+      const [nres, pres] = await Promise.all([
+        db.collection(NOTIFY_COL).where({ _openid: OPENID, read: false }).count(),
+        // 待审核帖子也计入未读（有帖子在审核时信封亮红点）
+        col.where({ _openid: OPENID, audit: 'pending' }).count()
+      ])
+      return { ok: true, data: { unread: nres.total + pres.total } }
     }
 
     if (action === 'like') {
@@ -519,6 +615,31 @@ exports.main = async (event) => {
       return { ok: true, data: { id: event.id, commentId } }
     }
 
+    // 作者修改自己的待审核/未通过帖子：内容更新后重新进入审核队列
+    if (action === 'editPost') {
+      const p = event.post || {}
+      const title = String(p.title || '').trim().slice(0, 40)
+      const excerpt = String(p.excerpt || '').trim().slice(0, 120)
+      if (!title || !excerpt) return { ok: false, msg: '内容为空' }
+      const res = await col.where({ _id: event.id, _openid: OPENID }).limit(1).get()
+      if (!res.data.length) return { ok: false, msg: '帖子不存在或无权修改' }
+      if (res.data[0].audit === 'approved') return { ok: false, msg: '该帖子已通过审核，无需修改' }
+      const bad = await checkText(title + '\n' + excerpt, OPENID)
+      if (bad) return { ok: false, msg: bad }
+      await col.doc(event.id).update({
+        data: {
+          petKind: String(p.petKind || res.data[0].petKind || '宠物').slice(0, 10),
+          title,
+          excerpt,
+          audit: 'pending',
+          rejectReason: '',
+          auditedAt: Date.now(),
+          auditedBy: OPENID
+        }
+      })
+      return { ok: true, data: { id: event.id } }
+    }
+
     if (action === 'publish') {
       // 脱敏发布：只保留物种/品种/部位与症状描述，不含用户信息
       const p = event.post || {}
@@ -541,6 +662,7 @@ exports.main = async (event) => {
         excerpt,
         image: typeof p.image === 'string' ? p.image.slice(0, 300) : '',
         recordId,
+        audit: 'pending', // 用户发帖需管理员审核后才在大厅展示
         likes: [],
         likeCount: 0,
         comments: [],
@@ -548,7 +670,7 @@ exports.main = async (event) => {
         createdAt: Date.now()
       }
       const res = await col.add({ data })
-      return { ok: true, data: { _id: res._id } }
+      return { ok: true, data: { _id: res._id, audit: 'pending' } }
     }
 
     // 删除帖子：本人或管理员
@@ -598,6 +720,40 @@ exports.main = async (event) => {
       return { ok: true, data: res.data }
     }
 
+    // 待审核帖子列表
+    if (action === 'adminPendingList') {
+      if (!(await isAdmin(OPENID))) return { ok: false, msg: '无权限' }
+      const res = await col
+        .where({ audit: 'pending' })
+        .orderBy('createdAt', 'asc')
+        .limit(100)
+        .get()
+      return { ok: true, data: res.data }
+    }
+
+    // 审核帖子：event.result 为 approved（同意发布）/ rejected（拒绝发布）
+    if (action === 'adminAudit') {
+      if (!(await isAdmin(OPENID))) return { ok: false, msg: '无权限' }
+      const result = event.result === 'approved' ? 'approved' : 'rejected'
+      const res = await col.where({ _id: event.id }).limit(1).get()
+      if (!res.data.length) return { ok: false, msg: '帖子不存在' }
+      const post = res.data[0]
+      if (post.audit !== 'pending') return { ok: false, msg: '该帖子已审核过' }
+      await col.doc(event.id).update({
+        data: { audit: result, auditedAt: Date.now(), auditedBy: OPENID }
+      })
+      // 审核结果通知作者（问诊广场信封）；force：管理员即作者时也要通知
+      await addNotify(post._openid, OPENID, {
+        force: true,
+        type: 'audit',
+        postId: event.id,
+        postTitle: post.title,
+        content:
+          result === 'approved' ? '你的帖子审核已通过，已发布' : '你的帖子审核未通过'
+      })
+      return { ok: true, data: { id: event.id, result } }
+    }
+
     // 下架帖子（直接删除）
     if (action === 'adminRemove') {
       if (!(await isAdmin(OPENID))) return { ok: false, msg: '无权限' }
@@ -610,6 +766,34 @@ exports.main = async (event) => {
       return { ok: true, data: { id: event.id } }
     }
 
+    // 管理员发布官方好帖
+    if (action === 'adminPublishOfficial') {
+      if (!(await isAdmin(OPENID))) return { ok: false, msg: '无权限' }
+      const p = event.post || {}
+      const title = String(p.title || '').trim().slice(0, 40)
+      const excerpt = String(p.excerpt || '').trim().slice(0, 500)
+      if (!title || !excerpt) return { ok: false, msg: '标题和内容不能为空' }
+      const bad = await checkText(title + '\n' + excerpt, OPENID)
+      if (bad) return { ok: false, msg: bad }
+      const res = await col.add({
+        data: {
+          _openid: OPENID,
+          official: true,
+          petKind: String(p.petKind || '猫').slice(0, 10),
+          petBreed: String(p.petBreed || '').trim().slice(0, 20) || '通用',
+          part: '',
+          title,
+          excerpt,
+          image: '',
+          likes: [],
+          likeCount: 0,
+          comments: [],
+          createdAt: Date.now()
+        }
+      })
+      return { ok: true, data: { _id: res._id } }
+    }
+
     if (action === 'adminReports') {
       if (!(await isAdmin(OPENID))) return { ok: false, msg: '无权限' }
       const res = await db
@@ -620,7 +804,7 @@ exports.main = async (event) => {
       return { ok: true, data: res.data }
     }
 
-    // 处理举报：标记已处理（可顺带下架对应帖子）
+    // 处理举报：标记已处理；event.remove 为 true 时顺带下架帖子并通知作者
     if (action === 'adminHandleReport') {
       if (!(await isAdmin(OPENID))) return { ok: false, msg: '无权限' }
       const res = await db
@@ -629,10 +813,40 @@ exports.main = async (event) => {
         .limit(1)
         .get()
       if (!res.data.length) return { ok: false, msg: '举报记录不存在' }
+      const rep = res.data[0]
+      const remove = event.remove === true
+      let actuallyRemoved = false
+      if (remove) {
+        // 下架帖子：标记 rejected 并通知作者（不物理删除，作者可在"我的帖子"看到下架原因）
+        const pres = await col.where({ _id: rep.postId }).limit(1).get()
+        if (pres.data.length) {
+          const post = pres.data[0]
+          if (post.audit !== 'rejected') {
+            await col.doc(rep.postId).update({
+              data: {
+                audit: 'rejected',
+                rejectReason: `因收到「${rep.type}」类举报${rep.reason ? '（原因：' + rep.reason + '）' : ''}，已被管理员下架`,
+                auditedAt: Date.now(),
+                auditedBy: OPENID
+              }
+            })
+            // 通知作者下架原因；force：管理员即作者时也要通知
+            await addNotify(post._openid, OPENID, {
+              force: true,
+              type: 'audit',
+              postId: rep.postId,
+              postTitle: post.title,
+              content: `你发布的帖子因收到「${rep.type}」类举报${rep.reason ? '（原因：' + rep.reason + '）' : ''}已被下架，如有疑问请联系管理员`
+            })
+          }
+          actuallyRemoved = true
+        }
+        // 帖子不存在（已被删除）时不再报错，直接标记举报已处理
+      }
       await db.collection(REPORT_COL).doc(event.id).update({
-        data: { status: 'handled', handledAt: Date.now() }
+        data: { status: 'handled', handledAt: Date.now(), removed: actuallyRemoved }
       })
-      return { ok: true, data: { id: event.id } }
+      return { ok: true, data: { id: event.id, removed: actuallyRemoved } }
     }
 
     return { ok: false, msg: '未知操作' }

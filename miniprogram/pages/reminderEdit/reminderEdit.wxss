@@ -30,7 +30,7 @@
   display: flex;
   align-items: center;
   min-height: 104rpx;
-  border-bottom: 2rpx solid #F0F1F5;
+  border-bottom: 2rpx solid #F7F3EC;
 }
 
 .row.column {
@@ -87,7 +87,7 @@
 }
 
 .ph {
-  color: #C2C6D0;
+  color: #C7D2D2;
 }
 
 /* 类型宫格 */
@@ -103,7 +103,7 @@
   padding: 14rpx 0;
   text-align: center;
   border-radius: 16rpx;
-  background: #F5F6FA;
+  background: #FAF8F5;
   border: 2rpx solid transparent;
   font-size: 24rpx;
   color: var(--text-sub);
@@ -151,7 +151,7 @@
   border-radius: 999rpx;
   font-size: 30rpx;
   line-height: 2.6;
-  border: 2rpx solid #FFD9DA;
+  border: 2rpx solid #F5D8D6;
 }
 
 .btn-danger::after {

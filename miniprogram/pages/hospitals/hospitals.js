@@ -69,10 +69,21 @@ function distText(km) {
 }
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '附近宠物医院查询 · 一键拨号导航', path: '/pages/hospitals/hospitals' }
+  },
+  onShareTimeline() {
+    return { title: '附近宠物医院查询 · 一键拨号导航' }
+  },
   data: {
     hospitals: [],
     located: false,
-    locating: true
+    locating: true,
+    // 地图：用户位置 + 医院标记点
+    markers: [],
+    mapLat: 22.5431,
+    mapLng: 114.0579
   },
 
   onLoad() {
@@ -95,7 +106,14 @@ Page({
               distText: distText(distanceKm(res.latitude, res.longitude, h.lat, h.lng))
             })
           ).sort((a, b) => a.dist - b.dist)
-          this.setData({ hospitals, located: true, locating: false })
+          this.setData({
+            hospitals,
+            located: true,
+            locating: false,
+            mapLat: res.latitude,
+            mapLng: res.longitude,
+            markers: this.buildMarkers(hospitals)
+          })
           resolve()
         },
         fail: err => {
@@ -116,6 +134,38 @@ Page({
           resolve()
         }
       })
+    })
+  },
+
+  // 生成地图标记点：名称与距离放 callout 气泡，点击标记直接发起导航
+  buildMarkers(hospitals) {
+    return hospitals.map((h, i) => ({
+      id: i,
+      latitude: h.lat,
+      longitude: h.lng,
+      iconPath: '/assets/marker.png',
+      width: 30,
+      height: 30,
+      callout: {
+        content: `${h.name}\n${h.distText}`,
+        display: 'ALWAYS',
+        padding: 6,
+        borderRadius: 6,
+        fontSize: 11,
+        color: '#2F3A3F'
+      }
+    }))
+  },
+
+  onMarkerTap(e) {
+    const h = this.data.hospitals[e.detail.markerId]
+    if (!h) return
+    wx.openLocation({
+      latitude: h.lat,
+      longitude: h.lng,
+      name: h.name,
+      address: h.addr,
+      scale: 15
     })
   },
 

@@ -6,10 +6,29 @@
 
   <block wx:else>
     <view class="tabs card">
-      <view class="tab {{tab === 'accounts' ? 'active' : ''}}" data-tab="accounts" bindtap="onTab">账号管理</view>
-      <view class="tab {{tab === 'posts' ? 'active' : ''}}" data-tab="posts" bindtap="onTab">帖子管理 {{posts.length}}</view>
-      <view class="tab {{tab === 'reports' ? 'active' : ''}}" data-tab="reports" bindtap="onTab">举报处理 {{reports.length}}</view>
-      <view class="tab {{tab === 'stats' ? 'active' : ''}}" data-tab="stats" bindtap="onTab">数据概览</view>
+      <view class="tab {{tab === 'accounts' ? 'active' : ''}}" data-tab="accounts" bindtap="onTab">
+        <view class="tab-label">账号管理</view>
+        <view class="tab-badge ghost">0</view>
+      </view>
+      <view class="tab {{tab === 'posts' ? 'active' : ''}}" data-tab="posts" bindtap="onTab">
+        <view class="tab-label">帖子管理</view>
+        <view wx:if="{{posts.length}}" class="tab-badge">{{posts.length}}</view>
+        <view wx:else class="tab-badge ghost">0</view>
+      </view>
+      <view class="tab {{tab === 'audit' ? 'active' : ''}}" data-tab="audit" bindtap="onTab">
+        <view class="tab-label">审核</view>
+        <view wx:if="{{pendingPosts.length}}" class="tab-badge">{{pendingPosts.length}}</view>
+        <view wx:else class="tab-badge ghost">0</view>
+      </view>
+      <view class="tab {{tab === 'reports' ? 'active' : ''}}" data-tab="reports" bindtap="onTab">
+        <view class="tab-label">举报处理</view>
+        <view wx:if="{{reports.length}}" class="tab-badge">{{reports.length}}</view>
+        <view wx:else class="tab-badge ghost">0</view>
+      </view>
+      <view class="tab {{tab === 'stats' ? 'active' : ''}}" data-tab="stats" bindtap="onTab">
+        <view class="tab-label">数据概览</view>
+        <view class="tab-badge ghost">0</view>
+      </view>
     </view>
 
     <!-- 账号管理 -->
@@ -17,13 +36,16 @@
       <view class="acc-form card">
         <view class="acc-form-title">添加账号</view>
         <view class="acc-field">
-          <text class="acc-label">账号</text>
-          <input class="acc-input" placeholder="登录账号（字母/数字）" placeholder-class="ph" value="{{newAccount.username}}" data-key="username" bindinput="onAccountInput" />
+          <text class="acc-label">手机号</text>
+          <input class="acc-input" type="number" maxlength="11" placeholder="11位手机号" placeholder-class="ph" value="{{newAccount.username}}" data-key="username" bindinput="onAccountInput" />
         </view>
         <view class="acc-field">
           <text class="acc-label">密码</text>
-          <input class="acc-input" password placeholder="至少6位" placeholder-class="ph" value="{{newAccount.password}}" data-key="password" bindinput="onAccountInput" />
+          <input class="acc-input" password="{{!showAccPwd}}" maxlength="14" placeholder="8-14位，含英文和数字" placeholder-class="ph" value="{{newAccount.password}}" data-key="password" bindinput="onAccountInput" />
+          <text class="pwd-eye" bindtap="toggleAccPwd">{{showAccPwd ? '🙈' : '👁'}}</text>
         </view>
+        <view wx:if="{{accPwdStrength === 'medium'}}" class="pwd-strength warn">⚠️ 该密码安全性一般</view>
+        <view wx:if="{{accPwdStrength === 'strong'}}" class="pwd-strength good">✅ 该密码的安全性很可靠！</view>
         <view class="acc-field">
           <text class="acc-label">昵称</text>
           <input class="acc-input" placeholder="选填" placeholder-class="ph" value="{{newAccount.nickname}}" data-key="nickname" bindinput="onAccountInput" />
@@ -50,6 +72,39 @@
 
     <!-- 帖子管理 -->
     <block wx:elif="{{tab === 'posts'}}">
+      <!-- 发布官方好帖 -->
+      <view class="acc-form card">
+        <view class="acc-form-title">📢 发布官方好帖</view>
+        <view class="kind-chips">
+          <view
+            wx:for="{{petKinds}}"
+            wx:key="*this"
+            class="kind-chip {{officialForm.petKind === item ? 'active' : ''}}"
+            data-kind="{{item}}"
+            bindtap="onOffKind"
+          >{{item}}</view>
+        </view>
+        <view class="acc-field">
+          <text class="acc-label">品种</text>
+          <input class="acc-input" placeholder="选填，默认“通用”" placeholder-class="ph" value="{{officialForm.petBreed}}" data-key="petBreed" bindinput="onOffInput" />
+        </view>
+        <view class="acc-field">
+          <text class="acc-label">标题</text>
+          <input class="acc-input" maxlength="40" placeholder="帖子标题" placeholder-class="ph" value="{{officialForm.title}}" data-key="title" bindinput="onOffInput" />
+        </view>
+        <textarea
+          class="off-textarea"
+          maxlength="500"
+          placeholder="正文内容（养护小知识等）"
+          placeholder-class="ph"
+          value="{{officialForm.excerpt}}"
+          data-key="excerpt"
+          bindinput="onOffInput"
+        ></textarea>
+        <button class="btn-primary acc-add" loading="{{publishingOfficial}}" bindtap="onPublishOfficial">发布</button>
+      </view>
+
+      <view class="sec-title">全部帖子</view>
       <view wx:if="{{loading}}" class="empty card">加载中…</view>
       <block wx:else>
         <view class="a-card card" wx:for="{{posts}}" wx:key="_id">
@@ -57,7 +112,7 @@
             <text class="a-emoji">{{item.kindEmoji}}</text>
             <view class="a-info">
               <view class="a-title ellipsis">{{item.title}}</view>
-              <view class="a-sub">{{item.petKind}}{{item.petBreed ? ' · ' + item.petBreed : ''}} · {{item.timeText}}{{item.demo ? ' · 示例' : ''}}</view>
+              <view class="a-sub">{{item.petKind}}{{item.petBreed ? ' · ' + item.petBreed : ''}} · {{item.timeText}}</view>
             </view>
           </view>
           <view class="a-actions">
@@ -65,6 +120,29 @@
           </view>
         </view>
         <view wx:if="{{!posts.length}}" class="empty card">暂无帖子</view>
+      </block>
+    </block>
+
+    <!-- 帖子审核：用户发帖需管理员同意后才展示 -->
+    <block wx:elif="{{tab === 'audit'}}">
+      <view wx:if="{{loadingAudit}}" class="empty card">加载中…</view>
+      <block wx:else>
+        <view class="sec-title">待审核帖子（{{pendingPosts.length}}）</view>
+        <view class="a-card card" wx:for="{{pendingPosts}}" wx:key="_id">
+          <view class="a-head">
+            <text class="a-emoji">{{item.kindEmoji}}</text>
+            <view class="a-info">
+              <view class="a-title ellipsis">{{item.title}}</view>
+              <view class="a-sub">{{item.petKind}}{{item.petBreed ? ' · ' + item.petBreed : ''}} · {{item.timeText}}</view>
+            </view>
+          </view>
+          <view class="audit-excerpt">{{item.excerpt}}</view>
+          <view class="a-actions">
+            <text class="a-btn danger" data-id="{{item._id}}" bindtap="onRejectPost">拒绝发布</text>
+            <text class="a-btn pass" data-id="{{item._id}}" bindtap="onApprovePost">同意发布</text>
+          </view>
+        </view>
+        <view wx:if="{{!pendingPosts.length}}" class="empty card">没有待审核的帖子 🎉</view>
       </block>
     </block>
 
@@ -81,7 +159,7 @@
             <text class="a-status {{item.status === 'handled' ? 'ok' : ''}}">{{item.statusText}}</text>
           </view>
           <view class="a-actions">
-            <text wx:if="{{item.postId}}" class="a-btn danger" data-postid="{{item.postId}}" bindtap="onRemoveReportedPost">下架帖子</text>
+            <text wx:if="{{item.postId && item.status !== 'handled'}}" class="a-btn danger" data-id="{{item._id}}" bindtap="onRemoveReportedPost">下架帖子</text>
             <text wx:if="{{item.status !== 'handled'}}" class="a-btn primary" data-id="{{item._id}}" bindtap="onHandleReport">标记已处理</text>
           </view>
         </view>

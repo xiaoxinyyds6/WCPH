@@ -28,6 +28,7 @@ exports.main = async (event) => {
           petAvatar: true,
           title: true,
           published: true,
+          consultType: true,
           createdAt: true,
           updatedAt: true,
           messages: true
@@ -65,6 +66,8 @@ exports.main = async (event) => {
         petAvatar: r.petAvatar || '',
         title: title.slice(0, 20),
         messages: r.messages || [],
+        // 问诊方式：photo=拍照问诊 / text=文字问诊（旧记录为空，列表页按消息内容推断）
+        consultType: r.consultType === 'photo' || r.consultType === 'text' ? r.consultType : '',
         published: false,
         createdAt: Date.now(),
         updatedAt: Date.now()

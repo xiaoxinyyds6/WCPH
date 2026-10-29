@@ -10,6 +10,20 @@
     </block>
   </view>
 
+  <!-- 地图：显示用户位置与附近医院标记，点击标记可发起导航 -->
+  <map
+    wx:if="{{markers.length}}"
+    class="hosp-map"
+    latitude="{{mapLat}}"
+    longitude="{{mapLng}}"
+    scale="12"
+    markers="{{markers}}"
+    show-location
+    bindmarkertap="onMarkerTap"
+  >
+    <cover-view class="map-loc-btn" bindtap="onRelocate">⌖</cover-view>
+  </map>
+
   <view class="hosp card" wx:for="{{hospitals}}" wx:key="name">
     <view class="h-head">
       <view class="h-icon">🏥</view>
