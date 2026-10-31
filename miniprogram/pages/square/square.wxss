@@ -3,7 +3,7 @@
   padding-bottom: 40rpx;
 }
 
-/* 未登录：仅显示居中登录入口 */
+/* ===== 未登录：仅显示居中登录入口 ===== */
 .login-gate {
   position: fixed;
   left: 48rpx;
@@ -17,9 +17,15 @@
 }
 
 .login-gate-icon {
-  font-size: 72rpx;
-  line-height: 1;
-  margin-bottom: 28rpx;
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 48rpx;
+  background: var(--primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  margin-bottom: 32rpx;
 }
 
 .login-gate-title {
@@ -38,117 +44,114 @@
   width: 280rpx;
   margin-top: 48rpx;
   border-radius: 999rpx;
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary) 0%, #6CBFB5 100%);
+  box-shadow: 0 8rpx 20rpx rgba(95, 168, 160, 0.28);
   color: #fff;
   font-size: 30rpx;
   line-height: 2.6;
 }
 
-.login-gate-btn::after {
-  border: none;
-}
-
-/* 顶部 */
+/* ===== 顶部标签导航 ===== */
 .head {
-  padding: 36rpx 40rpx 8rpx;
+  padding: 28rpx 32rpx 4rpx;
 }
 
-.head-title {
-  font-size: 44rpx;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.head-sub {
-  margin-top: 8rpx;
-  font-size: 24rpx;
-  color: var(--text-sub);
-}
-
-/* 头部：标题 + 信封入口 */
 .head-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.tabs {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  font-size: 30rpx;
+  color: var(--text-sub);
+  padding: 16rpx 0 22rpx;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.tab.active {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 32rpx;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8rpx;
+  width: 44rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(90deg, #63BDB2 0%, #8ECAE6 100%);
+}
+
 .msg-entry {
   position: relative;
-  padding: 8rpx 12rpx 8rpx 0;
-  font-size: 44rpx;
+  padding: 8rpx 4rpx 8rpx 12rpx;
+  font-size: 42rpx;
   line-height: 1;
 }
 
 .msg-badge {
   position: absolute;
   top: -6rpx;
-  right: -8rpx;
+  right: -10rpx;
   min-width: 32rpx;
   height: 32rpx;
   padding: 0 8rpx;
   border-radius: 999rpx;
   background: var(--danger);
+  border: 2rpx solid var(--bg);
   color: #fff;
   font-size: 20rpx;
-  line-height: 32rpx;
+  line-height: 30rpx;
   text-align: center;
   box-sizing: border-box;
 }
 
-/* 精选好帖入口 */
-.featured-entry {
-  display: inline-flex;
-  align-items: center;
-  margin-top: 12rpx;
-  padding: 8rpx 24rpx;
-  border-radius: 999rpx;
-  background: linear-gradient(135deg, #FBF3E2 0%, #FAEDED 100%);
-  border: 2rpx solid #F2CFA0;
-  color: #B8772B;
-  font-size: 24rpx;
-  font-weight: 600;
-}
-
-.fe-arrow {
-  margin-left: 8rpx;
-  font-size: 28rpx;
-}
-
-/* 云端不可用提示条 */
+/* ===== 云端不可用提示条 ===== */
 .offline-tip {
   margin: 24rpx 32rpx 0;
   padding: 16rpx 24rpx;
-  border-radius: 16rpx;
+  border-radius: var(--radius-sm);
   background: #FBF3E2;
   border: 2rpx solid #F2CFA0;
   color: #B8772B;
   font-size: 23rpx;
 }
 
-/* 大厅：推荐 / 最新 */
-.feed-tabs {
-  display: flex;
-  margin: 20rpx 32rpx 0;
-  padding: 6rpx;
-  border-radius: 16rpx;
-  background: #F3F8F7;
-}
-
-/* 搜索入口 */
+/* ===== 搜索入口 ===== */
 .search-bar {
   display: flex;
   align-items: center;
   margin: 20rpx 32rpx 0;
-  padding: 0 24rpx;
-  height: 72rpx;
+  padding: 0 28rpx;
+  height: 76rpx;
   border-radius: 999rpx;
   background: #FFFFFF;
-  box-shadow: 0 4rpx 14rpx rgba(47, 58, 63, 0.08);
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease;
+}
+
+.search-bar:active {
+  transform: scale(0.98);
 }
 
 .search-icon {
   font-size: 26rpx;
   margin-right: 12rpx;
+  opacity: 0.6;
 }
 
 .search-ph {
@@ -156,27 +159,46 @@
   color: var(--text-light);
 }
 
+/* ===== 大厅：推荐 / 最新 分段控件 ===== */
+.hall-top {
+  padding-bottom: 4rpx;
+}
+
+.feed-tabs {
+  display: flex;
+  margin: 20rpx 32rpx 0;
+  padding: 6rpx;
+  border-radius: 999rpx;
+  background: #EDF2F1;
+}
+
 .feed-tab {
   flex: 1;
-  padding: 12rpx 0;
-  border-radius: 12rpx;
+  padding: 14rpx 0;
+  border-radius: 999rpx;
   text-align: center;
   font-size: 26rpx;
   color: var(--text-sub);
+  transition: all 0.2s ease;
 }
 
 .feed-tab.active {
   background: #fff;
-  color: var(--primary);
+  color: var(--primary-deep);
   font-weight: 600;
-  box-shadow: 0 2rpx 8rpx rgba(31, 36, 48, 0.06);
+  box-shadow: 0 2rpx 10rpx rgba(31, 42, 46, 0.08);
 }
 
-/* 帖子卡片 */
+/* ===== 帖子卡片 ===== */
 .post {
   position: relative;
   margin: 24rpx 32rpx 0;
-  padding: 28rpx;
+  padding: 30rpx 28rpx;
+  transition: transform 0.18s ease;
+}
+
+.post:active {
+  transform: scale(0.99);
 }
 
 .p-head {
@@ -188,7 +210,7 @@
   width: 80rpx;
   height: 80rpx;
   flex: 0 0 80rpx;
-  border-radius: 24rpx;
+  border-radius: 26rpx;
   background: var(--primary-soft);
   display: flex;
   align-items: center;
@@ -225,7 +247,7 @@
   margin-left: 12rpx;
   padding: 2rpx 16rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #F2B880 0%, #E6A23C 100%);
+  background: linear-gradient(135deg, #F4C08B 0%, #E9A94B 100%);
   color: #fff;
   font-size: 20rpx;
   font-weight: 600;
@@ -243,19 +265,9 @@
   padding: 2rpx 14rpx;
   border-radius: 999rpx;
   background: var(--primary-soft);
-  color: var(--primary);
+  color: var(--primary-deep);
   font-size: 20rpx;
   font-weight: 600;
-}
-
-.demo-tag {
-  display: inline-block;
-  margin-left: 12rpx;
-  padding: 2rpx 14rpx;
-  border-radius: 999rpx;
-  background: #F7F3EC;
-  color: var(--text-light);
-  font-size: 20rpx;
 }
 
 .p-tag {
@@ -279,8 +291,8 @@
   width: 100%;
   height: 320rpx;
   margin-top: 20rpx;
-  border-radius: 16rpx;
-  background: #F7F3EC;
+  border-radius: var(--radius-sm);
+  background: #F0F3F2;
 }
 
 .p-foot {
@@ -288,6 +300,8 @@
   align-items: center;
   justify-content: space-between;
   margin-top: 24rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid var(--hairline);
 }
 
 .p-time {
@@ -308,7 +322,7 @@
 }
 
 .p-act.liked {
-  color: #D9534F;
+  color: var(--danger);
 }
 
 /* 收藏五角星：空心 ↔ 实心黄 */
@@ -318,7 +332,7 @@
 }
 
 .p-act.fav-on {
-  color: #E6A23C;
+  color: #E9A94B;
 }
 
 /* 「⋯」按钮与下拉菜单 */
@@ -344,29 +358,29 @@
 .more-menu {
   position: absolute;
   right: 20rpx;
-  bottom: 88rpx;
+  bottom: 96rpx;
   z-index: 40;
   background: #fff;
-  border-radius: 16rpx;
-  box-shadow: 0 8rpx 30rpx rgba(31, 36, 48, 0.18);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lift);
   padding: 8rpx 0;
 }
 
 .mm-item {
-  padding: 16rpx 44rpx;
+  padding: 18rpx 44rpx;
   font-size: 26rpx;
   color: var(--text-main);
 }
 
 .mm-item + .mm-item {
-  border-top: 2rpx solid #FAF8F5;
+  border-top: 2rpx solid var(--hairline);
 }
 
 .mm-item:active {
-  background: #FAF8F5;
+  background: var(--bg);
 }
 
-/* 分页加载提示 */
+/* ===== 分页加载提示 ===== */
 .load-more {
   padding: 32rpx 0;
   text-align: center;
@@ -389,24 +403,25 @@
   color: var(--text-light);
 }
 
-.ph {
-  color: var(--text-light);
-}
-
-/* 右下角发布按钮 */
+/* ===== 右下角发布按钮 ===== */
 .fab {
   position: fixed;
   right: 40rpx;
   bottom: calc(48rpx + env(safe-area-inset-bottom));
   width: 104rpx;
   height: 104rpx;
-  border-radius: 52rpx;
-  background: linear-gradient(135deg, #6CBFB5 0%, #A78BFA 100%);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #63BDB2 0%, #4E9E96 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12rpx 28rpx rgba(107, 191, 181, 0.4);
+  box-shadow: 0 12rpx 28rpx rgba(95, 168, 160, 0.40);
   z-index: 20;
+  transition: transform 0.18s ease;
+}
+
+.fab:active {
+  transform: scale(0.9);
 }
 
 .fab-plus {
@@ -416,21 +431,21 @@
   margin-top: -6rpx;
 }
 
-/* 从消息页跳转定位时的高亮提示 */
+/* ===== 从消息页跳转定位时的高亮提示 ===== */
 .post.highlight {
   animation: post-flash 2.6s ease;
 }
 
 @keyframes post-flash {
   0%, 55% {
-    box-shadow: 0 0 0 8rpx rgba(95, 168, 160, 0.35), 0 8rpx 30rpx rgba(95, 168, 160, 0.12);
+    box-shadow: 0 0 0 8rpx rgba(95, 168, 160, 0.35), var(--shadow);
   }
   100% {
-    box-shadow: 0 8rpx 30rpx rgba(95, 168, 160, 0.08);
+    box-shadow: var(--shadow);
   }
 }
 
-/* 每日首次进入公告弹框（顶部下拉） */
+/* ===== 每日首次进入公告弹框（顶部下拉） ===== */
 .notice-mask {
   position: fixed;
   left: 0;
@@ -447,7 +462,7 @@
   right: 0;
   top: 0;
   background: #fff;
-  border-radius: 0 0 32rpx 32rpx;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   padding: 32rpx 32rpx calc(24rpx + env(safe-area-inset-top));
   animation: notice-drop 0.3s ease;
 }
@@ -497,7 +512,7 @@
   font-size: 24rpx;
   color: #B8772B;
   background: #FBF3E2;
-  border-radius: 12rpx;
+  border-radius: var(--radius-sm);
   padding: 14rpx 20rpx;
   line-height: 1.7;
 }
@@ -517,7 +532,7 @@
 .checkbox {
   width: 36rpx;
   height: 36rpx;
-  border-radius: 8rpx;
+  border-radius: 10rpx;
   border: 2rpx solid #D8E0DE;
   margin-right: 12rpx;
   color: #fff;
@@ -525,6 +540,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
 }
 
 .checkbox.checked {
@@ -540,49 +556,17 @@
 .notice-btn {
   padding: 14rpx 44rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #6CBFB5 0%, #A78BFA 100%);
+  background: linear-gradient(135deg, #63BDB2 0%, #4E9E96 100%);
+  box-shadow: 0 6rpx 16rpx rgba(95, 168, 160, 0.30);
   color: #fff;
   font-size: 28rpx;
   font-weight: 600;
 }
 
-/* 三标签导航（问诊大厅 / 精选好帖 / 官方好帖） */
-.tabs {
-  display: flex;
-  flex: 1;
-  align-items: center;
-}
-
-.tab {
-  flex: 1;
-  text-align: center;
-  font-size: 30rpx;
-  color: var(--text-sub);
-  padding: 16rpx 0 20rpx;
-  position: relative;
-}
-
-.tab.active {
-  color: var(--primary);
-  font-weight: 700;
-}
-
-.tab.active::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 6rpx;
-  width: 48rpx;
-  height: 8rpx;
-  border-radius: 4rpx;
-  background: linear-gradient(135deg, #6CBFB5 0%, #A78BFA 100%);
-}
-
-/* 官方好帖：区别于大厅/精选的卡片样式（浅绿底 + 官方徽标） */
+/* ===== 官方好帖：浅绿底 + 官方徽标 ===== */
 .post.official-post {
-  background: linear-gradient(160deg, #EAF4EE 0%, #EAF4EE 100%);
-  border: 2rpx solid #CFE8DB;
+  background: linear-gradient(160deg, #F2F8F4 0%, #FFFFFF 100%);
+  border: 2rpx solid #D9EBE0;
 }
 
 .official-badge {
@@ -590,7 +574,7 @@
   margin-left: 12rpx;
   padding: 4rpx 16rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #4CAF7D 0%, #4CAF7D 100%);
+  background: linear-gradient(135deg, #5CB88A 0%, #4CAF7D 100%);
   color: #fff;
   font-size: 20rpx;
   font-weight: 600;
@@ -602,9 +586,9 @@
   overflow: hidden;
   margin: 24rpx 32rpx 0;
   padding: 48rpx 40rpx;
-  border-radius: 32rpx;
-  background: linear-gradient(135deg, #2F3A3F 0%, #8B7BD8 45%, #A78BFA 100%);
-  box-shadow: 0 16rpx 40rpx rgba(139, 123, 216, 0.35);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(130deg, #2F3A3F 0%, #7A6BC9 55%, #9D8CF0 100%);
+  box-shadow: 0 16rpx 40rpx rgba(122, 107, 201, 0.32);
 }
 
 .hero-deco {
@@ -637,11 +621,13 @@
 }
 
 .hero-icon {
+  position: relative;
   font-size: 56rpx;
   line-height: 1;
 }
 
 .hero-title {
+  position: relative;
   margin-top: 12rpx;
   font-size: 48rpx;
   font-weight: 800;
@@ -650,6 +636,7 @@
 }
 
 .hero-sub {
+  position: relative;
   margin-top: 10rpx;
   font-size: 24rpx;
   color: rgba(255, 255, 255, 0.85);
@@ -657,21 +644,21 @@
 
 /* ===== 精选好帖：前三名金/银/铜配色 ===== */
 .post.top1 {
-  border: 2rpx solid #E8C468;
-  box-shadow: 0 10rpx 30rpx rgba(230, 162, 60, 0.28);
-  background: linear-gradient(180deg, #FBF6E8 0%, #FFFFFF 100%);
+  border: 2rpx solid #EED491;
+  box-shadow: 0 10rpx 30rpx rgba(230, 162, 60, 0.22);
+  background: linear-gradient(180deg, #FDF9EE 0%, #FFFFFF 100%);
 }
 
 .post.top2 {
-  border: 2rpx solid #CFDAD9;
-  box-shadow: 0 8rpx 26rpx rgba(150, 165, 190, 0.25);
-  background: linear-gradient(180deg, #FAF8F5 0%, #FFFFFF 100%);
+  border: 2rpx solid #D8E0E4;
+  box-shadow: 0 8rpx 26rpx rgba(150, 165, 190, 0.20);
+  background: linear-gradient(180deg, #F8FAFB 0%, #FFFFFF 100%);
 }
 
 .post.top3 {
-  border: 2rpx solid #F2B880;
-  box-shadow: 0 8rpx 26rpx rgba(215, 150, 90, 0.22);
-  background: linear-gradient(180deg, #FAF8F5 0%, #FFFFFF 100%);
+  border: 2rpx solid #F2C9A0;
+  box-shadow: 0 8rpx 26rpx rgba(215, 150, 90, 0.18);
+  background: linear-gradient(180deg, #FBF6F1 0%, #FFFFFF 100%);
 }
 
 .rank-badge {
@@ -689,9 +676,9 @@
   margin-left: 12rpx;
   padding: 8rpx 20rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #D9534F 0%, #D9534F 100%);
+  background: linear-gradient(135deg, #E2655F 0%, #D24B47 100%);
   color: #fff;
   font-size: 22rpx;
   font-weight: 700;
-  box-shadow: 0 6rpx 16rpx rgba(217, 83, 79, 0.35);
+  box-shadow: 0 6rpx 16rpx rgba(217, 83, 79, 0.30);
 }

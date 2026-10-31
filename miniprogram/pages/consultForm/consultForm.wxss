@@ -320,6 +320,11 @@
   flex: 1;
 }
 
+.rp-actions .btn-supplement {
+  flex: 1;
+  margin-left: 24rpx;
+}
+
 .rp-actions .btn-primary {
   flex: 1;
   margin-left: 24rpx;

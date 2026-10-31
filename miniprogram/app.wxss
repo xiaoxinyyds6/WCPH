@@ -1,17 +1,23 @@
 /* 全局样式与设计变量 */
 page {
   --primary: #5FA8A0;
+  --primary-deep: #4A8B84;
   --primary-light: #8ECAE6;
   --primary-soft: #EDF5F3;
-  --text-main: #2F3A3F;
+  --text-main: #1F2A2E;
   --text-sub: #6B7A80;
-  --text-light: #6B7A80;
-  --bg: #FAF8F5;
+  --text-light: #9AA8AD;
+  --bg: #F7F8F7;
   --card: #FFFFFF;
-  --danger: #D9534F;
+  --danger: #E25C58;
   --warn: #E6A23C;
+  --radius-sm: 16rpx;
   --radius: 24rpx;
-  --shadow: 0 8rpx 30rpx rgba(95, 168, 160, 0.08);
+  --radius-lg: 32rpx;
+  /* 大厂风格：低透明度、大扩散的双层阴影 */
+  --shadow: 0 2rpx 6rpx rgba(31, 42, 46, 0.03), 0 12rpx 32rpx rgba(31, 42, 46, 0.06);
+  --shadow-lift: 0 4rpx 12rpx rgba(31, 42, 46, 0.05), 0 20rpx 48rpx rgba(31, 42, 46, 0.10);
+  --hairline: #EEF2F1;
 
   background-color: var(--bg);
   color: var(--text-main);
@@ -24,10 +30,25 @@ view, text, scroll-view, navigator, button, input, textarea, image {
   box-sizing: border-box;
 }
 
+/* 全局去除按钮默认边框 */
+button::after {
+  border: none;
+}
+
 .card {
   background: var(--card);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+
+/* 可点卡片的按压反馈 */
+.tap-active {
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.tap-active:active {
+  transform: scale(0.97);
+  opacity: 0.88;
 }
 
 .btn-primary {
@@ -38,10 +59,13 @@ view, text, scroll-view, navigator, button, input, textarea, image {
   font-weight: 600;
   border: none;
   line-height: 2.6;
+  box-shadow: 0 8rpx 20rpx rgba(95, 168, 160, 0.28);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.btn-primary::after {
-  border: none;
+.btn-primary:active {
+  transform: scale(0.97);
+  box-shadow: 0 4rpx 10rpx rgba(95, 168, 160, 0.20);
 }
 
 .btn-plain {
@@ -51,10 +75,12 @@ view, text, scroll-view, navigator, button, input, textarea, image {
   border-radius: 999rpx;
   font-size: 30rpx;
   line-height: 2.4;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
-.btn-plain::after {
-  border: none;
+.btn-plain:active {
+  transform: scale(0.97);
+  opacity: 0.85;
 }
 
 .text-sub { color: var(--text-sub); }

@@ -80,7 +80,16 @@ module.exports = {
 
   // ===== AI 问诊助手 =====
   assistantAsk: (question, petProfile, fileIDs) =>
-    call('assistant', { question, petProfile, fileIDs }, 30000),
+    // 图像问诊为两阶段诊断，耗时长，预留接近云函数上限（60s）的预算
+    call('assistant', { question, petProfile, fileIDs }, 55000),
+  // RAG 私有知识库管理（仅管理员）
+  kbList: () => call('assistant', { action: 'kbList' }),
+  kbAdd: doc => call('assistant', { action: 'kbAdd', doc }),
+  kbRemove: id => call('assistant', { action: 'kbRemove', id }),
+
+  // 附近宠物医院（腾讯位置服务 POI，云函数需配置 TENCENT_MAP_KEY）
+  // 检索本身只需 1-2 秒，超时快速降级，避免页面长时间卡在「正在定位」
+  nearbyHospitals: (lat, lng) => call('assistant', { action: 'nearbyHospitals', lat, lng }, 15000),
 
   // ===== 问诊广场 =====
   squareList: (page, feed, feedSeed) => call('square', { action: 'list', page, feed, feedSeed }),

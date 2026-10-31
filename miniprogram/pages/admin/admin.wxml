@@ -25,6 +25,10 @@
         <view wx:if="{{reports.length}}" class="tab-badge">{{reports.length}}</view>
         <view wx:else class="tab-badge ghost">0</view>
       </view>
+      <view class="tab {{tab === 'kb' ? 'active' : ''}}" data-tab="kb" bindtap="onTab">
+        <view class="tab-label">知识库</view>
+        <view class="tab-badge ghost">0</view>
+      </view>
       <view class="tab {{tab === 'stats' ? 'active' : ''}}" data-tab="stats" bindtap="onTab">
         <view class="tab-label">数据概览</view>
         <view class="tab-badge ghost">0</view>
@@ -164,6 +168,49 @@
           </view>
         </view>
         <view wx:if="{{!reports.length}}" class="empty card">暂无举报</view>
+      </block>
+    </block>
+
+    <!-- 知识库管理（RAG 私有知识库） -->
+    <block wx:elif="{{tab === 'kb'}}">
+      <view class="acc-form card">
+        <view class="acc-form-title">📚 添加知识条目</view>
+        <view class="acc-field">
+          <text class="acc-label">标题</text>
+          <input class="acc-input" maxlength="40" placeholder="如：幼犬疫苗接种时间表" placeholder-class="ph" value="{{kbForm.title}}" data-key="title" bindinput="onKbInput" />
+        </view>
+        <view class="acc-field">
+          <text class="acc-label">关键词</text>
+          <input class="acc-input" maxlength="50" placeholder="选填，空格分隔，如：疫苗 幼犬" placeholder-class="ph" value="{{kbForm.tags}}" data-key="tags" bindinput="onKbInput" />
+        </view>
+        <textarea
+          class="off-textarea"
+          maxlength="2000"
+          placeholder="知识内容（AI 问诊时会检索这些资料作为回答依据）"
+          placeholder-class="ph"
+          value="{{kbForm.content}}"
+          data-key="content"
+          bindinput="onKbInput"
+        ></textarea>
+        <button class="btn-primary acc-add" loading="{{addingKb}}" bindtap="onAddKb">添加</button>
+      </view>
+
+      <view class="sec-title">知识条目 {{kbDocs.length}}</view>
+      <view wx:if="{{loadingKb}}" class="empty card">加载中…</view>
+      <block wx:else>
+        <view class="a-card card" wx:for="{{kbDocs}}" wx:key="_id">
+          <view class="a-head">
+            <view class="a-info">
+              <view class="a-title ellipsis">{{item.title}}</view>
+              <view class="a-sub">{{item.tags || '无关键词'}} · {{item.timeText}}{{item.seeded ? ' · 内置' : ''}}</view>
+            </view>
+          </view>
+          <view class="a-content">{{item.content}}</view>
+          <view class="a-actions">
+            <text class="a-btn danger" data-id="{{item._id}}" bindtap="onRemoveKb">删除</text>
+          </view>
+        </view>
+        <view wx:if="{{!kbDocs.length}}" class="empty card">暂无知识条目，AI 首次问诊时会自动内置常见养护知识</view>
       </block>
     </block>
 

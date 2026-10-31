@@ -50,6 +50,25 @@ Page({
     wx.navigateTo({ url: '/pages/chat/chat' + (id ? '?sessionId=' + id : '') })
   },
 
+  // 报告下方补充问诊：打开该记录对应的聊天会话，在完整上下文里继续提问
+  onSupplementText() {
+    const rec = this.data.record || {}
+    const lines = []
+    if (rec.petName) lines.push('宠物：' + rec.petName)
+    if (rec.title) lines.push('原问诊描述：' + rec.title)
+    const aiMsgs = (rec.messages || []).filter(m => m.role === 'ai')
+    const lastAi = aiMsgs[aiMsgs.length - 1]
+    if (lastAi && lastAi.content) lines.push('原问诊结论：' + String(lastAi.content).slice(0, 300))
+    if (lines.length) getApp()._supplementContext = lines.join('\n')
+    if (rec._id) {
+      wx.navigateTo({ url: '/pages/chat/chat?sessionId=' + rec._id + '&supplement=1' })
+    } else {
+      wx.navigateTo({
+        url: '/pages/chat/chat?mode=text&supplement=1' + (rec.petId ? '&petId=' + rec.petId : '')
+      })
+    }
+  },
+
   // 把本次问诊沉淀为健康提醒（疫苗/驱虫/复诊等）
   onAddReminder() {
     const rec = this.data.record

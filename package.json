@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "AI 宠物助手 · 微信小程序（云开发）",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "node test/assistant-image-flow.test.js"
   },
   "repository": {
     "type": "git",

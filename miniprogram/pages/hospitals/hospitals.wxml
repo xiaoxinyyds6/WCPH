@@ -2,7 +2,8 @@
   <view class="status card {{located ? 'ok' : ''}}">
     <view wx:if="{{locating}}" class="s-text">📍 正在定位…</view>
     <block wx:elif="{{located}}">
-      <view class="s-text">📍 定位成功，已按距离从近到远排序</view>
+      <view class="s-text">📍 定位成功{{accuracy ? '（精度约 ' + accuracy + ' 米）' : ''}}{{demoMode ? '，正在使用示例数据' : '，已按距离从近到远展示真实医院'}}</view>
+      <view wx:if="{{accuracy >= 500}}" class="s-btn" bindtap="onRelocate">重新定位</view>
     </block>
     <block wx:else>
       <view class="s-text">📍 未获取到定位，无法计算距离</view>
@@ -42,5 +43,5 @@
     </view>
   </view>
 
-  <view class="tip">医院信息与坐标为演示数据，紧急情况请直接拨打附近宠物医院电话或前往就诊。</view>
+  <view class="tip">{{demoMode ? (errMsg ? '医院检索失败：' + errMsg + '；当前为示例数据，紧急情况请直接拨打附近宠物医院电话。' : '医院检索服务暂不可用，当前为示例数据；紧急情况请直接拨打附近宠物医院电话。') : '医院信息来自腾讯位置服务，仅供参考，到院前建议电话确认接诊时间。'}}</view>
 </view>

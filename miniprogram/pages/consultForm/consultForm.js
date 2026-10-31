@@ -306,5 +306,24 @@ Page({
 
   finish() {
     wx.navigateBack()
+  },
+
+  // 报告下方补充问诊：打开本次拍照问诊对应的聊天会话，在完整上下文里继续提问
+  supplementConsult() {
+    const d = this.data
+    const lines = [this.buildText()]
+    if (d.report.summary) lines.push('AI初步评估：' + d.report.summary)
+    // 上下文静默携带：会话内每条消息发送时自动附加给 AI
+    getApp()._supplementContext = lines.filter(Boolean).join('\n')
+    if (d.savedId) {
+      // 记录已保存：直接打开该记录的会话（含图片、描述与 AI 报告历史，档案袋自动选中）
+      wx.navigateTo({ url: '/pages/chat/chat?sessionId=' + d.savedId + '&supplement=1' })
+    } else {
+      // 记录尚未保存完成：退回新建会话方式，同样携带上下文
+      const petId = d.selectedPet && d.selectedPet._id
+      wx.navigateTo({
+        url: '/pages/chat/chat?mode=text&supplement=1' + (petId ? '&petId=' + petId : '')
+      })
+    }
   }
 })

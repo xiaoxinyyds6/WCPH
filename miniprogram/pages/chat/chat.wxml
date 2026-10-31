@@ -1,7 +1,7 @@
 <view class="chat">
   <!-- 自定义导航栏（拦截返回：未发送附件询问保存） -->
   <view class="navbar" style="padding-top: {{statusBarHeight}}px;">
-    <view class="nav-inner">
+    <view class="nav-inner" style="height: {{navH}}px; padding-right: {{navPadRight}}px;">
       <view class="nav-back" bindtap="onBack">‹</view>
       <text class="nav-title ellipsis">{{sessionTitle || 'AI问诊'}}</text>
       <view class="nav-actions">
@@ -60,7 +60,7 @@
 
   <!-- 消息列表 -->
   <scroll-view class="msg-list" scroll-y scroll-into-view="{{scrollTo}}" scroll-with-animation enhanced show-scrollbar="{{false}}">
-    <view wx:for="{{messages}}" wx:key="_k" id="msg-{{item._k}}" class="msg {{item.role}}">
+    <view wx:for="{{messages}}" wx:for-index="idx" wx:key="_k" id="msg-{{item._k}}" class="msg {{item.role}}">
       <view class="avatar-dot">{{item.role === 'ai' ? '🤖' : '🙂'}}</view>
       <view class="bubble-wrap">
         <!-- 紧急程度分级预警横幅 -->
@@ -93,6 +93,13 @@
         <video wx:if="{{item.video}}" class="media-video" src="{{item.video}}" controls object-fit="contain"></video>
 
         <text wx:if="{{item.content}}" class="bubble" user-select>{{item.content}}</text>
+
+        <!-- 报告下方的补充问诊入口：跳转至 AI 文字问诊界面 -->
+        <view
+          wx:if="{{item.role === 'ai' && item.level && idx === messages.length - 1}}"
+          class="supplement-btn"
+          bindtap="onSupplementText"
+        >💬 补充问诊 · 文字继续追问</view>
 
         <text class="time">{{item.timeText}}</text>
       </view>

@@ -209,6 +209,7 @@
 
     <view class="rp-actions">
       <button class="btn-plain" bindtap="resetForm">再次问诊</button>
+      <button class="btn-plain btn-supplement" bindtap="supplementConsult">补充问诊</button>
       <button class="btn-primary" bindtap="finish">完成</button>
     </view>
   </block>

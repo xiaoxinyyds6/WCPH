@@ -26,6 +26,11 @@ Page({
     petKinds: Object.keys(KIND_EMOJI),
     officialForm: { petKind: '猫', petBreed: '', title: '', excerpt: '' },
     publishingOfficial: false,
+    // 知识库（RAG 私有知识库）
+    kbDocs: [],
+    kbForm: { title: '', tags: '', content: '' },
+    addingKb: false,
+    loadingKb: false,
     loading: true,
     loadingAccounts: false,
     loadingStats: false,
@@ -81,6 +86,7 @@ Page({
       return Promise.all([badges, this.loadAccounts()])
     }
     if (t === 'posts' || t === 'reports' || t === 'audit') return badges
+    if (t === 'kb') return Promise.all([badges, this.loadKb()])
     if (t === 'stats') return Promise.all([badges, this.loadStats()])
     return badges
   },
@@ -259,6 +265,73 @@ Page({
         this.setData({ publishingOfficial: false })
         cloud.toastError(err)
       })
+  },
+
+  // ===== 知识库管理（RAG 私有知识库：AI 问诊时检索参考） =====
+  loadKb() {
+    this.setData({ loadingKb: true })
+    return cloud
+      .kbList()
+      .then(list => {
+        const kbDocs = (list || []).map(d =>
+          Object.assign({}, d, { timeText: util.formatDateTime(d.createdAt) })
+        )
+        this.setData({ kbDocs, loadingKb: false })
+      })
+      .catch(err => {
+        this.setData({ loadingKb: false })
+        cloud.toastError(err)
+      })
+  },
+
+  onKbInput(e) {
+    const key = e.currentTarget.dataset.key
+    this.setData({ ['kbForm.' + key]: e.detail.value })
+  },
+
+  onAddKb() {
+    if (this.data.addingKb) return
+    const f = this.data.kbForm
+    if (!f.title.trim() || !f.content.trim()) {
+      wx.showToast({ title: '请填写标题和内容', icon: 'none' })
+      return
+    }
+    this.setData({ addingKb: true })
+    cloud
+      .kbAdd({ title: f.title.trim(), tags: f.tags.trim(), content: f.content.trim() })
+      .then(() => {
+        this.setData({ addingKb: false, kbForm: { title: '', tags: '', content: '' } })
+        wx.showToast({ title: '知识条目已添加', icon: 'success' })
+        this.loadKb()
+      })
+      .catch(err => {
+        this.setData({ addingKb: false })
+        cloud.toastError(err)
+      })
+  },
+
+  onRemoveKb(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '删除知识条目',
+      content: '删除后 AI 问诊将不再参考该条内容，确定删除吗？',
+      confirmColor: '#D9534F',
+      success: res => {
+        if (!res.confirm) return
+        wx.showLoading({ title: '删除中' })
+        cloud
+          .kbRemove(id)
+          .then(() => {
+            wx.hideLoading()
+            wx.showToast({ title: '已删除', icon: 'success' })
+            this.loadKb()
+          })
+          .catch(err => {
+            wx.hideLoading()
+            cloud.toastError(err)
+          })
+      }
+    })
   },
 
   onAddAccount() {

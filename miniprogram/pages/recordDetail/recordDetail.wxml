@@ -40,6 +40,8 @@
     <view wx:if="{{!record.messages.length}}" class="empty">该记录暂无对话内容</view>
   </view>
 
+  <button class="btn-plain plan-btn" bindtap="onSupplementText">💬 补充问诊（文字问诊）</button>
+
   <view class="notice">以上内容由AI生成，仅供初步参考，不能替代执业兽医诊断。</view>
 
   <button class="btn-primary consult-btn" bindtap="onContinueConsult">继续 AI 问诊</button>

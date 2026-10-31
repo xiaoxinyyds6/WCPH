@@ -32,7 +32,7 @@
     "navigationBarBackgroundColor": "#5FA8A0",
     "navigationBarTitleText": "AI宠物助手",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#FAF8F5"
+    "backgroundColor": "#F7F8F7"
   },
   "tabBar": {
     "color": "#6B7A80",

@@ -35,6 +35,9 @@ Page({
     scrollTo: '',
     sending: false,
     statusBarHeight: 20,
+    // 导航栏右侧胶囊避让默认值（onLoad 按真机胶囊位置覆盖）
+    navPadRight: 12,
+    navH: 44,
     // 当前问诊会话（一条记录 = 一个档案袋）
     sessionId: '',
     sessionTitle: '',
@@ -70,6 +73,21 @@ Page({
     } catch (e) {
       this.setData({ statusBarHeight: 20 })
     }
+    // 胶囊按钮避让：真机上右上角系统胶囊会遮挡导航操作按钮，按胶囊实际位置收窄右侧
+    try {
+      const rect = wx.getMenuButtonBoundingClientRect()
+      const wi = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+      if (rect && rect.width && wi && wi.windowWidth) {
+        this.setData({
+          // 右侧预留到胶囊左缘再留 8px 间隙，按钮不再被胶囊覆盖
+          navPadRight: Math.max(90, wi.windowWidth - rect.left + 8),
+          // 导航栏高度与胶囊垂直居中对齐
+          navH: Math.max(40, rect.height + (rect.top - (wi.statusBarHeight || 20)) * 2)
+        })
+      }
+    } catch (e) {
+      // 低版本基础库取不到胶囊信息时使用默认布局
+    }
     // 待发送附件草稿：挂到全局暂存，退回首页再进入不丢失
     this._pendingMedia = getApp()._chatDraftMedia = getApp()._chatDraftMedia || { images: [], video: '' }
     this.setData({ pendingImages: this._pendingMedia.images, pendingVideo: this._pendingMedia.video })
@@ -83,6 +101,20 @@ Page({
     if (draftText) {
       this.setData({ inputValue: draftText })
       getApp()._chatDraftText = ''
+    }
+    // 补充问诊：静默携带拍照问诊上下文；档案袋由 petId 自动选中，输入框留空待用户提问
+    if ((options && options.supplement) === '1' && getApp()._supplementContext) {
+      this._supplementContext = String(getApp()._supplementContext)
+      getApp()._supplementContext = ''
+      // 打开历史会话时历史消息本身已可见，无需重复提示
+      if (!this._pendingSessionId) {
+        this.appendMessage(
+          'ai',
+          '📎 已延续刚才拍照问诊的信息，无需重新描述：\n' +
+            this._supplementContext +
+            '\n\n请直接输入想进一步咨询的问题。'
+        )
+      }
     }
     this._autoSend = (options && options.auto) === '1'
     // 免责声明弹窗与宠物加载解耦：加载立即执行，弹窗只负责"是否同意继续问诊"
@@ -682,8 +714,17 @@ Page({
 
   // 调用真实 AI（文字问诊 / 拍照问诊），失败自动降级回本地规则引擎
   requestAI(text, cloudImages, media) {
+    // 补充问诊会话：把拍照问诊上下文自动附加给 AI；用户气泡和输入内容保持原样
+    let payloadText = text
+    if (this._supplementContext) {
+      payloadText =
+        '【补充问诊】延续刚才的拍照问诊，以下是已有信息（用户无需重复描述）：\n' +
+        this._supplementContext +
+        '\n\n用户本次补充提问：' +
+        text
+    }
     cloud
-      .assistantAsk(text, this.data.currentPet, cloudImages)
+      .assistantAsk(payloadText, this.data.currentPet, cloudImages)
       .then(data => {
         const level = (data && data.level) || 'green'
         const summary = (data && data.summary) || ''
@@ -695,7 +736,9 @@ Page({
         }
         this.appendMessage('ai', content, { level })
       })
-      .catch(() => {
+      .catch(err => {
+        console.error('[chat] AI 问诊调用失败，降级本地回复', err)
+        wx.showToast({ title: 'AI服务暂不可用，已用基础回复', icon: 'none', duration: 2500 })
         const reply = util.aiConsult(text, this.data.currentPet, media)
         this.appendMessage('ai', reply.content, { level: reply.level })
       })
@@ -708,6 +751,11 @@ Page({
   // 快捷提问：填入输入框，可编辑后发送
   onQuickQuestion(e) {
     this.setData({ inputValue: e.currentTarget.dataset.q })
+  },
+
+  // 报告下方补充问诊：跳转至 AI 文字问诊界面
+  onSupplementText() {
+    wx.navigateTo({ url: '/pages/chat/chat?mode=text' })
   },
 
   // 输入栏相机按钮：拍照/相册选图（最多3张）

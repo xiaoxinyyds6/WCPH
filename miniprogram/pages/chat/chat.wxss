@@ -351,6 +351,18 @@
   white-space: pre-wrap;
 }
 
+/* 报告下方「补充问诊」入口 */
+.supplement-btn {
+  display: inline-block;
+  margin-top: 12rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 999rpx;
+  background: var(--primary-soft);
+  color: var(--primary-deep);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
 .msg.ai .bubble {
   background: #fff;
   color: var(--text-main);
