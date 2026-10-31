@@ -3,6 +3,7 @@
     "pages/consult/consult",
     "pages/consultForm/consultForm",
     "pages/square/square",
+    "pages/searchPosts/searchPosts",
     "pages/featured/featured",
     "pages/postDetail/postDetail",
     "pages/messages/messages",
@@ -28,14 +29,14 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#5B7CFA",
+    "navigationBarBackgroundColor": "#5FA8A0",
     "navigationBarTitleText": "AI宠物助手",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#F5F6FA"
+    "backgroundColor": "#F7F8F7"
   },
   "tabBar": {
-    "color": "#9AA0AC",
-    "selectedColor": "#5B7CFA",
+    "color": "#6B7A80",
+    "selectedColor": "#5FA8A0",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [

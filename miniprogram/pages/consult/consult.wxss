@@ -3,24 +3,89 @@
   padding-bottom: 40rpx;
 }
 
-/* 宠物选择区外框 */
+/* ===== 顶部品牌卡片 ===== */
+.hero-wrap {
+  padding: 24rpx 32rpx 0;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 48rpx 40rpx 52rpx;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(130deg, #3F9189 0%, #63BDB2 52%, #8FD0CE 100%);
+  box-shadow: 0 16rpx 40rpx rgba(95, 168, 160, 0.32);
+  color: #fff;
+}
+
+/* 装饰光斑（伪元素，无需改结构） */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 320rpx;
+  height: 320rpx;
+  border-radius: 50%;
+  top: -150rpx;
+  right: -80rpx;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  bottom: -90rpx;
+  left: -40rpx;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-badge {
+  position: relative;
+  display: inline-block;
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  padding: 8rpx 22rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2rpx solid rgba(255, 255, 255, 0.35);
+  margin-bottom: 22rpx;
+}
+
+.hero-title {
+  position: relative;
+  font-size: 48rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  margin-bottom: 16rpx;
+}
+
+.hero-sub {
+  position: relative;
+  font-size: 25rpx;
+  line-height: 1.7;
+  opacity: 0.92;
+}
+
+/* ===== 宠物选择区 ===== */
 .pet-section {
   margin: 24rpx 32rpx 0;
-  padding: 24rpx 20rpx 8rpx;
+  padding: 26rpx 20rpx 10rpx;
 }
 
 .pet-section-title {
   font-size: 28rpx;
   font-weight: 600;
   color: var(--text-main);
-  padding-left: 8rpx;
+  padding-left: 10rpx;
   margin-bottom: 8rpx;
 }
 
 /* 宠物横向栏 */
 .pet-bar {
   white-space: nowrap;
-  padding: 12rpx 8rpx 20rpx;
+  padding: 12rpx 8rpx 22rpx;
 }
 
 .pet-item {
@@ -40,7 +105,7 @@
   width: 36rpx;
   height: 36rpx;
   border-radius: 50%;
-  background: #ff5a5f;
+  background: var(--danger);
   border: 2rpx solid #fff;
   box-sizing: border-box;
   display: flex;
@@ -62,11 +127,17 @@
   border-radius: 50%;
   margin: 0 auto;
   background: #fff;
-  box-shadow: 0 6rpx 18rpx rgba(91, 124, 250, 0.12);
+  box-shadow: 0 4rpx 14rpx rgba(31, 42, 46, 0.08);
+  border: 4rpx solid #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  transition: transform 0.18s ease;
+}
+
+.pet-item:active .avatar {
+  transform: scale(0.92);
 }
 
 .avatar-img {
@@ -80,8 +151,8 @@
 }
 
 .add-avatar {
-  border: 2rpx dashed var(--primary-light);
-  background: #fff;
+  border: 2rpx dashed #C9DEDA;
+  background: #F7FAFA;
 }
 
 .plus {
@@ -93,11 +164,12 @@
 
 /* 删除框：尺寸、虚线圆、布局与添加框一致，仅图标红色区分 */
 .del-avatar {
-  border-color: #ffb3b6;
+  border-color: #EFC4C2;
+  background: #FDF7F7;
 }
 
 .del-plus {
-  color: #ff5a5f;
+  color: var(--danger);
 }
 
 .pet-name {
@@ -107,42 +179,153 @@
   color: var(--text-sub);
 }
 
-/* 顶部品牌卡片容器 */
-.hero-wrap {
-  padding: 24rpx 32rpx 0;
+/* ===== 问诊入口按钮组：左=症状拍照问诊，右=文字问诊 ===== */
+.consult-actions {
+  display: flex;
+  align-items: center;
+  margin: 24rpx 32rpx 8rpx;
 }
 
-/* 介绍区 */
+.btn-photo,
+.btn-text {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  height: 300rpx;
+  border-radius: var(--radius-lg);
+  border: none;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+  font-weight: 600;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-photo:active,
+.btn-text:active {
+  transform: scale(0.96);
+}
+
+.btn-photo {
+  background: linear-gradient(140deg, #F4C08B 0%, #E9A94B 100%);
+  box-shadow: 0 12rpx 28rpx rgba(233, 169, 75, 0.32);
+}
+
+.btn-text {
+  margin-left: 24rpx;
+  background: linear-gradient(140deg, #63BDB2 0%, #4E9E96 100%);
+  box-shadow: 0 12rpx 28rpx rgba(95, 168, 160, 0.30);
+}
+
+/* emoji 置于毛玻璃圆片之上 */
+.btn-emoji {
+  width: 108rpx;
+  height: 108rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52rpx;
+  line-height: 1;
+  margin-bottom: 18rpx;
+}
+
+.btn-label {
+  font-size: 28rpx;
+  text-align: center;
+}
+
+/* ===== 急救指南入口（急救红渐变，醒目） ===== */
+.firstaid-entry {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  margin: 28rpx 32rpx 0;
+  padding: 32rpx;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #E2655F 0%, #D24B47 100%);
+  box-shadow: 0 12rpx 30rpx rgba(217, 83, 79, 0.28);
+  transition: transform 0.18s ease;
+}
+
+.firstaid-entry:active {
+  transform: scale(0.98);
+}
+
+.firstaid-entry::before {
+  content: '';
+  position: absolute;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  top: -140rpx;
+  right: -60rpx;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.fa-icon {
+  position: relative;
+  width: 96rpx;
+  height: 96rpx;
+  flex: 0 0 96rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.20);
+  border: 2rpx solid rgba(255, 255, 255, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+}
+
+.fa-body {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  margin-left: 24rpx;
+}
+
+.fa-title {
+  font-size: 33rpx;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1rpx;
+}
+
+.fa-sub {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.fa-badge {
+  position: relative;
+  flex: 0 0 auto;
+  margin-right: 10rpx;
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.94);
+  color: #D24B47;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.fa-arrow {
+  position: relative;
+  flex: 0 0 auto;
+  font-size: 44rpx;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0 8rpx;
+}
+
+/* ===== 介绍区 ===== */
 .intro {
   padding: 8rpx 32rpx 0;
-}
-
-.hero {
-  padding: 44rpx 36rpx;
-  background: linear-gradient(135deg, #6C8CFF 0%, #9B7BFF 100%);
-  color: #fff;
-}
-
-.hero-badge {
-  display: inline-block;
-  font-size: 22rpx;
-  padding: 6rpx 20rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.22);
-  margin-bottom: 20rpx;
-}
-
-.hero-title {
-  font-size: 46rpx;
-  font-weight: 700;
-  letter-spacing: 2rpx;
-  margin-bottom: 16rpx;
-}
-
-.hero-sub {
-  font-size: 26rpx;
-  line-height: 1.7;
-  opacity: 0.94;
 }
 
 .tip-card {
@@ -150,13 +333,18 @@
   align-items: flex-start;
   padding: 30rpx 28rpx;
   margin-top: 24rpx;
+  transition: transform 0.18s ease;
+}
+
+.tip-card:active {
+  transform: scale(0.98);
 }
 
 .tip-icon {
   width: 76rpx;
   height: 76rpx;
   flex: 0 0 76rpx;
-  border-radius: 22rpx;
+  border-radius: 24rpx;
   background: var(--primary-soft);
   display: flex;
   align-items: center;
@@ -164,6 +352,12 @@
   font-size: 40rpx;
   margin-right: 22rpx;
 }
+
+/* 大厂风格彩色图标底：按顺序轮换柔和色板 */
+.tip-card:nth-of-type(2) .tip-icon { background: #FFF4E3; }
+.tip-card:nth-of-type(3) .tip-icon { background: #F0EBFB; }
+.tip-card:nth-of-type(4) .tip-icon { background: #EAF4EE; }
+.tip-card:nth-of-type(5) .tip-icon { background: #FDEEEE; }
 
 .tip-body {
   flex: 1;
@@ -188,114 +382,4 @@
   font-size: 22rpx;
   margin-top: 32rpx;
   padding: 0 40rpx;
-}
-
-/* 问诊入口按钮组：左=症状拍照问诊，右=文字问诊，正方形大按钮 */
-.consult-actions {
-  display: flex;
-  align-items: center;
-  margin: 24rpx 32rpx 8rpx;
-}
-
-.btn-photo,
-.btn-text {
-  flex: 1;
-  margin: 0;
-  padding: 0;
-  height: 320rpx;
-  border-radius: 24rpx;
-  border: none;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  line-height: 1.5;
-  font-weight: 600;
-}
-
-.btn-photo::after,
-.btn-text::after {
-  border: none;
-}
-
-.btn-photo {
-  background: linear-gradient(135deg, #FF9A5A 0%, #FF6B81 100%);
-  box-shadow: 0 10rpx 24rpx rgba(255, 107, 129, 0.3);
-}
-
-.btn-text {
-  margin-left: 24rpx;
-  background: linear-gradient(135deg, #5B7CFA 0%, #7C6AFB 100%);
-  box-shadow: 0 10rpx 24rpx rgba(91, 124, 250, 0.3);
-}
-
-.btn-emoji {
-  font-size: 64rpx;
-  line-height: 1.2;
-  margin-bottom: 12rpx;
-}
-
-.btn-label {
-  font-size: 28rpx;
-  text-align: center;
-}
-
-/* 急救指南入口（按钮组下方，急救红渐变，醒目） */
-.firstaid-entry {
-  display: flex;
-  align-items: center;
-  margin: 28rpx 32rpx 0;
-  padding: 36rpx 32rpx;
-  border-radius: 28rpx;
-  background: linear-gradient(135deg, #FF6B6E 0%, #FF9A5A 100%);
-  box-shadow: 0 12rpx 30rpx rgba(255, 107, 110, 0.38);
-}
-
-.fa-icon {
-  width: 96rpx;
-  height: 96rpx;
-  flex: 0 0 96rpx;
-  border-radius: 26rpx;
-  background: rgba(255, 255, 255, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 52rpx;
-}
-
-.fa-body {
-  flex: 1;
-  min-width: 0;
-  margin-left: 24rpx;
-}
-
-.fa-title {
-  font-size: 33rpx;
-  font-weight: 700;
-  color: #fff;
-}
-
-.fa-sub {
-  margin-top: 8rpx;
-  font-size: 23rpx;
-  color: rgba(255, 255, 255, 0.88);
-}
-
-.fa-badge {
-  flex: 0 0 auto;
-  margin-right: 10rpx;
-  padding: 8rpx 18rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.92);
-  color: #E0552F;
-  font-size: 20rpx;
-  font-weight: 700;
-}
-
-.fa-arrow {
-  flex: 0 0 auto;
-  font-size: 44rpx;
-  color: rgba(255, 255, 255, 0.9);
-  padding: 0 8rpx;
 }

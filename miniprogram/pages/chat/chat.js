@@ -19,6 +19,13 @@ const HOSPITALS = [
 ]
 
 Page({
+  // ===== 分享给好友 / 朋友圈（聊天页分享落到问诊入口） =====
+  onShareAppMessage() {
+    return { title: 'AI宠物问诊 · 描述症状即可获得初步评估', path: '/pages/consult/consult' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物问诊 · 描述症状即可获得初步评估' }
+  },
   data: {
     pets: [],
     petIndex: -1,
@@ -28,6 +35,9 @@ Page({
     scrollTo: '',
     sending: false,
     statusBarHeight: 20,
+    // 导航栏右侧胶囊避让默认值（onLoad 按真机胶囊位置覆盖）
+    navPadRight: 12,
+    navH: 44,
     // 当前问诊会话（一条记录 = 一个档案袋）
     sessionId: '',
     sessionTitle: '',
@@ -59,19 +69,52 @@ Page({
     try {
       const wi = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
       this.setData({ statusBarHeight: wi.statusBarHeight || 20 })
-      wx.setNavigationBarColor({ frontColor: '#ffffff', backgroundColor: '#6C8CFF' })
+      wx.setNavigationBarColor({ frontColor: '#ffffff', backgroundColor: '#6CBFB5' })
     } catch (e) {
       this.setData({ statusBarHeight: 20 })
+    }
+    // 胶囊按钮避让：真机上右上角系统胶囊会遮挡导航操作按钮，按胶囊实际位置收窄右侧
+    try {
+      const rect = wx.getMenuButtonBoundingClientRect()
+      const wi = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+      if (rect && rect.width && wi && wi.windowWidth) {
+        this.setData({
+          // 右侧预留到胶囊左缘再留 8px 间隙，按钮不再被胶囊覆盖
+          navPadRight: Math.max(90, wi.windowWidth - rect.left + 8),
+          // 导航栏高度与胶囊垂直居中对齐
+          navH: Math.max(40, rect.height + (rect.top - (wi.statusBarHeight || 20)) * 2)
+        })
+      }
+    } catch (e) {
+      // 低版本基础库取不到胶囊信息时使用默认布局
     }
     // 待发送附件草稿：挂到全局暂存，退回首页再进入不丢失
     this._pendingMedia = getApp()._chatDraftMedia = getApp()._chatDraftMedia || { images: [], video: '' }
     this.setData({ pendingImages: this._pendingMedia.images, pendingVideo: this._pendingMedia.video })
     this._pendingSessionId = (options && options.sessionId) || ''
+    // 问诊方式归类：只有拍照问诊报告流程显式传 mode=photo；
+    // 聊天页（文字问诊入口及其他入口）产生的记录一律归「文字图片问诊记录」，无论聊天中是否带图片
+    const mode = options && options.mode
+    this._consultMode = mode === 'photo' ? 'photo' : 'text'
     // 问诊表单跳转：结构化描述文本预填输入框（auto=1 时自动发送）
     const draftText = (options && options.text) || getApp()._chatDraftText || ''
     if (draftText) {
       this.setData({ inputValue: draftText })
       getApp()._chatDraftText = ''
+    }
+    // 补充问诊：静默携带拍照问诊上下文；档案袋由 petId 自动选中，输入框留空待用户提问
+    if ((options && options.supplement) === '1' && getApp()._supplementContext) {
+      this._supplementContext = String(getApp()._supplementContext)
+      getApp()._supplementContext = ''
+      // 打开历史会话时历史消息本身已可见，无需重复提示
+      if (!this._pendingSessionId) {
+        this.appendMessage(
+          'ai',
+          '📎 已延续刚才拍照问诊的信息，无需重新描述：\n' +
+            this._supplementContext +
+            '\n\n请直接输入想进一步咨询的问题。'
+        )
+      }
     }
     this._autoSend = (options && options.auto) === '1'
     // 免责声明弹窗与宠物加载解耦：加载立即执行，弹窗只负责"是否同意继续问诊"
@@ -91,7 +134,7 @@ Page({
         'AI 助手仅提供初步健康评估与护理建议，不构成诊断、不开具处方，不能替代执业兽医的现场诊疗。急症请立即前往宠物医院。继续使用即表示您已了解并同意。',
       confirmText: '同意',
       cancelText: '不同意',
-      confirmColor: '#5B7CFA',
+      confirmColor: '#5FA8A0',
       success: res => {
         if (res.confirm) {
           wx.setStorageSync('disclaimer_agreed_v1', true)
@@ -350,7 +393,7 @@ Page({
       role: 'ai',
       content:
         greet +
-        '\n\n✨ 您还可以：\n· 点击右上角 📁 随时切换或新建问诊记录；\n· 点 ✏️ 给本次问诊命名，方便以后查找；\n· 点 📤 可把这次问诊脱敏后发布到问诊广场求助。\n\n🚨 如遇呼吸困难、大出血、误食毒物、抽搐等危急情况，请立即送医！',
+        '\n\n✨ 您还可以：\n· 按住输入栏 🎙 说话，松开自动转文字；\n· 上传化验单/病历照片，AI 会先提取图中文字再逐项解读；\n· 点击右上角 📁 随时切换或新建问诊记录；\n· 点 📤 可把这次问诊脱敏后发布到问诊广场求助。\n\n🚨 如遇呼吸困难、大出血、误食毒物、抽搐等危急情况，请立即送医！',
       timeText: hm(),
       _k: this.nextKey()
     }
@@ -535,7 +578,7 @@ Page({
                     wx.showToast({ title: '已发布，但记录状态同步失败', icon: 'none' })
                   })
                 }
-                wx.showToast({ title: '已发布到广场', icon: 'success' })
+                wx.showToast({ title: '已提交，待管理员审核', icon: 'success' })
               })
               .catch(err => {
                 wx.hideLoading()
@@ -671,8 +714,17 @@ Page({
 
   // 调用真实 AI（文字问诊 / 拍照问诊），失败自动降级回本地规则引擎
   requestAI(text, cloudImages, media) {
+    // 补充问诊会话：把拍照问诊上下文自动附加给 AI；用户气泡和输入内容保持原样
+    let payloadText = text
+    if (this._supplementContext) {
+      payloadText =
+        '【补充问诊】延续刚才的拍照问诊，以下是已有信息（用户无需重复描述）：\n' +
+        this._supplementContext +
+        '\n\n用户本次补充提问：' +
+        text
+    }
     cloud
-      .assistantAsk(text, this.data.currentPet, cloudImages)
+      .assistantAsk(payloadText, this.data.currentPet, cloudImages)
       .then(data => {
         const level = (data && data.level) || 'green'
         const summary = (data && data.summary) || ''
@@ -684,7 +736,9 @@ Page({
         }
         this.appendMessage('ai', content, { level })
       })
-      .catch(() => {
+      .catch(err => {
+        console.error('[chat] AI 问诊调用失败，降级本地回复', err)
+        wx.showToast({ title: 'AI服务暂不可用，已用基础回复', icon: 'none', duration: 2500 })
         const reply = util.aiConsult(text, this.data.currentPet, media)
         this.appendMessage('ai', reply.content, { level: reply.level })
       })
@@ -697,6 +751,11 @@ Page({
   // 快捷提问：填入输入框，可编辑后发送
   onQuickQuestion(e) {
     this.setData({ inputValue: e.currentTarget.dataset.q })
+  },
+
+  // 报告下方补充问诊：跳转至 AI 文字问诊界面
+  onSupplementText() {
+    wx.navigateTo({ url: '/pages/chat/chat?mode=text' })
   },
 
   // 输入栏相机按钮：拍照/相册选图（最多3张）
@@ -724,7 +783,8 @@ Page({
       messages: msgs,
       petId: pet._id || '',
       petName: pet.name || '',
-      petAvatar: pet.avatarIsImage ? '' : pet.avatar || ''
+      petAvatar: pet.avatarIsImage ? '' : pet.avatar || '',
+      consultType: this._consultMode || ''
     }
 
     // 串行化，避免连续发送时重复创建记录

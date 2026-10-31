@@ -5,15 +5,17 @@
   <view
     wx:for="{{list}}"
     wx:key="_id"
-    class="msg card {{item.read ? '' : 'unread'}}"
+    class="msg card {{item.read ? '' : 'unread'}} {{item.auditing ? 'auditing' : ''}}"
     data-pid="{{item.postId}}"
+    data-type="{{item.type}}"
     bindtap="onTap"
   >
     <view class="m-icon">{{item.icon}}</view>
     <view class="m-body">
       <view class="m-title-line">
         <text class="m-title">{{item.title}}</text>
-        <view wx:if="{{!item.read}}" class="m-dot"></view>
+        <view wx:if="{{item.auditing}}" class="m-status">审核中</view>
+        <view wx:elif="{{!item.read}}" class="m-dot"></view>
       </view>
       <view class="m-post ellipsis">「{{item.postTitle}}」</view>
       <view wx:if="{{item.content}}" class="m-content ellipsis">{{item.content}}</view>

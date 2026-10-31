@@ -5,6 +5,13 @@ const KIND_EMOJI = { 猫: '🐱', 狗: '🐶', 兔: '🐰', 鸟: '🐦', 仓鼠:
 const FEATURED_MIN = 100
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '官方精选好帖 · 养宠干货合集', path: '/pages/featured/featured' }
+  },
+  onShareTimeline() {
+    return { title: '官方精选好帖 · 养宠干货合集' }
+  },
   data: {
     posts: [],
     loading: true,

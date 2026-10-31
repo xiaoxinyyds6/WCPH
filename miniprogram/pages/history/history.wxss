@@ -78,7 +78,7 @@
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
-  background: #FFF0F0;
+  background: #FAEDED;
   box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.12);
   color: var(--danger);
   font-size: 34rpx;

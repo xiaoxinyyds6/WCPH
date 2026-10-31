@@ -2,6 +2,13 @@ const cloud = require('../../utils/cloud')
 const util = require('../../utils/util')
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '疫苗驱虫提醒 · 养宠必备', path: '/pages/reminders/reminders' }
+  },
+  onShareTimeline() {
+    return { title: '疫苗驱虫提醒 · 养宠必备' }
+  },
   data: {
     logged: false,
     tab: 'pending',
@@ -108,7 +115,7 @@ Page({
     wx.showModal({
       title: '删除提醒',
       content: '确定删除这条提醒吗？',
-      confirmColor: '#FF5A5F',
+      confirmColor: '#D9534F',
       success: res => {
         if (!res.confirm) return
         wx.showLoading({ title: '删除中' })

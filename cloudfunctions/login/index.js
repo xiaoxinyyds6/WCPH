@@ -225,25 +225,41 @@ exports.main = async (event) => {
       }
     }
 
-    // 微信手机号快速授权：cloudID 只能在云函数中解析，前端不接触解密密钥
-    if (action === 'phoneLogin') {
+    // ===== 微信一键登录：以 openid 为唯一标识自动创建/登录账户（无需手机号） =====
+    if (action === 'wxLogin') {
       if (!OPENID) return { ok: false, msg: '未获取到微信身份，请重试' }
-      if (!event.cloudID || typeof event.cloudID !== 'string') {
-        return { ok: false, msg: '微信授权凭证无效，请重新授权' }
+      await ensureCollection(USERS)
+      const col = db.collection(USERS)
+      const exist = await col.where({ _openid: OPENID }).limit(1).get()
+      const now = Date.now()
+      let user
+      if (exist.data.length) {
+        const doc = exist.data[0]
+        await col.doc(doc._id).update({ data: { updatedAt: now, lastLoginAt: now } })
+        user = Object.assign({}, doc, { openid: OPENID })
+      } else {
+        const data = {
+          _openid: OPENID,
+          phone: '',
+          nickname: '宠物用户' + OPENID.slice(-4),
+          avatarUrl: '',
+          loginType: 'wx',
+          createdAt: now,
+          updatedAt: now
+        }
+        const res = await col.add({ data })
+        user = Object.assign({ _id: res._id }, data, { openid: OPENID })
       }
-      const res = await cloud.getOpenData({ list: [event.cloudID] })
-      const info = res.list && res.list[0] && res.list[0].data
-      const phone = (info && info.phoneNumber) || ''
-      if (!phone) return { ok: false, msg: '未获取到微信绑定手机号，请改用验证码登录' }
-      const user = await upsertUser(OPENID, phone, { loginType: 'wechat' })
+      // 与 phoneLogin 一致返回扁平结构，前端直接拿 openid 等字段
       return {
         ok: true,
         data: {
           openid: OPENID,
-          phone,
+          phone: user.phone || '',
+          username: user.username || '',
           nickname: user.nickname,
-          avatarUrl: user.avatarUrl,
-          loginType: 'wechat'
+          avatarUrl: user.avatarUrl || '',
+          loginType: 'wx'
         }
       }
     }

@@ -14,7 +14,7 @@ function ensureLogin() {
     content: '为了账户安全，请重新登录',
     cancelText: '稍后',
     confirmText: '立即登录',
-    confirmColor: '#5B7CFA',
+    confirmColor: '#5FA8A0',
     success: res => {
       if (res.confirm) wx.navigateTo({ url: '/pages/login/login' })
     }
@@ -23,6 +23,13 @@ function ensureLogin() {
 }
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: 'AI宠物问诊 · 24小时在线守护毛孩子', path: '/pages/consult/consult' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物问诊 · 24小时在线守护毛孩子' }
+  },
   data: {
     pets: [],
     loading: false,
@@ -100,7 +107,7 @@ Page({
         content: '确认删除该宠物吗？',
         confirmText: '确认',
         cancelText: '取消',
-        confirmColor: '#FF5A5F',
+        confirmColor: '#D9534F',
         success: res => {
           if (!res.confirm) return
           wx.showLoading({ title: '删除中', mask: true })
@@ -141,7 +148,7 @@ Page({
 
   onTextConsult() {
     if (!ensureLogin()) return
-    wx.navigateTo({ url: '/pages/chat/chat' })
+    wx.navigateTo({ url: '/pages/chat/chat?mode=text' })
   },
 
   // 宠物急救指南（离线版）

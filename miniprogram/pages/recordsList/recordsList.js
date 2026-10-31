@@ -6,8 +6,17 @@ function isImageUrl(a) {
 }
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: 'AI宠物助手 · 问诊记录', path: '/pages/mine/mine' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物助手 · 问诊记录' }
+  },
   data: {
     records: [],
+    shown: [],
+    recordTab: 'photo',
     loading: true
   },
 
@@ -18,6 +27,24 @@ Page({
       return
     }
     this.loadRecords()
+  },
+
+  // 切换分类：拍照问诊记录 / 文字问诊记录
+  onRecordTab(e) {
+    const tab = e.currentTarget.dataset.tab === 'text' ? 'text' : 'photo'
+    this.setData({ recordTab: tab })
+    this.applyFilter()
+  },
+
+  // 按问诊方式过滤：新记录直接按 consultType；旧记录按消息里有无图片/视频推断
+  applyFilter() {
+    const tab = this.data.recordTab
+    const shown = this.data.records.filter(r => {
+      if (r.consultType === 'photo' || r.consultType === 'text') return r.consultType === tab
+      const hasMedia = (r.messages || []).some(m => m.role === 'user' && ((m.images || []).length || m.video))
+      return (hasMedia ? 'photo' : 'text') === tab
+    })
+    this.setData({ shown })
   },
 
   onPullDownRefresh() {
@@ -50,6 +77,7 @@ Page({
           })
         })
         this.setData({ records, loading: false })
+        this.applyFilter()
       })
       .catch(err => {
         this.setData({ loading: false })

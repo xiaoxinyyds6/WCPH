@@ -27,7 +27,6 @@
         <view class="p-sub">
           {{item.petKind}}{{item.breedText}}
           <text wx:if="{{item.part && item.part !== '其他'}}" class="part-tag">{{item.part}}</text>
-          <text wx:if="{{item.demo}}" class="demo-tag">示例</text>
         </view>
       </view>
       <view class="hot-tag">🔥 {{item.likeCount}}赞</view>

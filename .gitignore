@@ -22,3 +22,6 @@ project.private.config.json
 
 # 会话生成的临时图片
 vibe_images/
+
+# 云函数本地密钥（腾讯位置服务 Key，勿提交）
+cloudfunctions/assistant/tencent_key.js

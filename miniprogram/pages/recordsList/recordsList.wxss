@@ -10,6 +10,33 @@
   margin-bottom: 20rpx;
 }
 
+/* 分类导航：拍照问诊 / 文字问诊 */
+.record-tabs {
+  display: flex;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 8rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--shadow);
+}
+
+.rt-item {
+  flex: 1;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27rpx;
+  color: var(--text-sub);
+  border-radius: 16rpx;
+}
+
+.rt-item.active {
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 700;
+}
+
 .r-avatar {
   width: 92rpx;
   height: 92rpx;
@@ -45,8 +72,8 @@
   margin-left: 12rpx;
   padding: 2rpx 14rpx;
   border-radius: 999rpx;
-  background: #E7F7EF;
-  color: #2BB673;
+  background: #EAF4EE;
+  color: #4CAF7D;
   font-size: 20rpx;
 }
 

@@ -40,6 +40,23 @@
   margin-top: 8rpx;
 }
 
+/* 审核状态标签 */
+.audit-tag {
+  display: inline-block;
+  margin-top: 10rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+}
+.audit-tag.pending {
+  background: #FBF3E4;
+  color: #B27B23;
+}
+.audit-tag.rejected {
+  background: #FAEDED;
+  color: var(--danger);
+}
+
 .del-link {
   flex: 0 0 auto;
   font-size: 26rpx;

@@ -30,7 +30,7 @@
       <text wx:if="{{!selecting}}" class="r-arrow">›</text>
     </view>
   </block>
-  <view wx:else class="empty">还没有点赞的帖子，去问诊广场逛逛吧</view>
+  <view wx:else class="empty">{{mode === 'fav' ? '还没有收藏的帖子，去问诊广场点 ☆ 收藏吧' : '还没有点赞的帖子，去问诊广场逛逛吧'}}</view>
 
   <view wx:if="{{selecting}}" class="delete-bar">
     <button class="delete-btn" disabled="{{!selectedIds.length || deleting}}" bindtap="onDeleteSelected">{{deleting ? '删除中…' : '删除' + (selectedIds.length ? '（' + selectedIds.length + '）' : '')}}</button>

@@ -26,6 +26,15 @@
             bindtap="onPick"
           >{{item}}</view>
         </view>
+        <input
+          wx:if="{{kindIndex === kinds.length - 1}}"
+          class="other-input"
+          placeholder="请填写具体种类，如：貂、刺猬、蛇"
+          placeholder-class="other-placeholder"
+          value="{{otherKind}}"
+          bindinput="onOtherKind"
+          maxlength="12"
+        />
       </view>
 
       <view class="row column">
@@ -40,6 +49,15 @@
             bindtap="onPick"
           >{{item}}</view>
         </view>
+        <input
+          wx:if="{{partIndex === parts.length - 1}}"
+          class="other-input"
+          placeholder="请填写具体部位，如：鼻子、尾巴、脚垫"
+          placeholder-class="other-placeholder"
+          value="{{otherPart}}"
+          bindinput="onOtherPart"
+          maxlength="12"
+        />
       </view>
 
       <view class="row column">
@@ -191,6 +209,7 @@
 
     <view class="rp-actions">
       <button class="btn-plain" bindtap="resetForm">再次问诊</button>
+      <button class="btn-plain btn-supplement" bindtap="supplementConsult">补充问诊</button>
       <button class="btn-primary" bindtap="finish">完成</button>
     </view>
   </block>

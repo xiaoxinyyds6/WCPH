@@ -2,6 +2,13 @@ const cloud = require('../../utils/cloud')
 const util = require('../../utils/util')
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: 'AI宠物助手 · 智能守护每一位毛孩子', path: '/pages/consult/consult' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物助手 · 智能守护每一位毛孩子' }
+  },
   data: {
     phone: '',
     code: '',

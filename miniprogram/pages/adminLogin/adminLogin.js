@@ -1,6 +1,13 @@
 const cloud = require('../../utils/cloud')
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: 'AI宠物助手', path: '/pages/consult/consult' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物助手' }
+  },
   data: {
     username: '',
     password: '',

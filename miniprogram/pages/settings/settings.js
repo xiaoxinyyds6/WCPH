@@ -31,6 +31,13 @@ const SECTIONS = [
 ]
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: 'AI宠物助手 · 智能守护每一位毛孩子', path: '/pages/mine/mine' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物助手 · 智能守护每一位毛孩子' }
+  },
   data: {
     sections: SECTIONS,
     openId: ''

@@ -5,6 +5,13 @@ function validPassword(password) {
 }
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: 'AI宠物助手 · 智能守护每一位毛孩子', path: '/pages/consult/consult' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物助手 · 智能守护每一位毛孩子' }
+  },
   data: {
     mode: 'register',
     phone: '',
@@ -78,7 +85,7 @@ Page({
         }
         getApp().setLogin(userInfo)
         wx.showToast({ title: '密码设置成功', icon: 'success' })
-        setTimeout(() => wx.switchTab({ url: '/pages/mine/mine' }), 800)
+        setTimeout(() => wx.switchTab({ url: '/pages/consult/consult' }), 800)
       })
       .catch(err => {
         this.setData({ saving: false })

@@ -1,10 +1,14 @@
 <view class="page" wx:if="{{post}}">
+  <view wx:if="{{post.audit === 'pending'}}" class="audit-banner pending">⏳ 该帖子正在等待管理员审核，通过后将展示在问诊广场</view>
+  <view wx:elif="{{post.audit === 'rejected'}}" class="audit-banner rejected">✕ {{post.rejectReason || '该帖子未通过审核，当前仅你自己可见'}}</view>
+  <!-- 作者可修改待审核/未通过的帖子，修改后重新进入审核队列 -->
+  <view wx:if="{{mine && post.audit !== 'approved'}}" class="edit-entry" bindtap="onEditPost">✏️ 修改帖子（修改后将重新提交审核）</view>
   <view class="head card">
     <view class="h-title-line">
       <view class="h-avatar">{{kindEmoji}}</view>
       <view class="h-info">
         <view class="h-meta">{{post.petKind}}{{breedText}}<text wx:if="{{post.part && post.part !== '其他'}}" class="part-tag">{{post.part}}</text></view>
-        <view class="h-time">{{timeText}}<text wx:if="{{post.demo}}"> · 示例案例</text></view>
+        <view class="h-time">{{timeText}}</view>
       </view>
       <text wx:if="{{post.fromConsult}}" class="h-tag">来自在线问诊</text>
     </view>

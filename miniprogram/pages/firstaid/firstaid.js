@@ -45,6 +45,13 @@ const GUIDES = [
 ]
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: '宠物急救指南 · 关键时刻能救命', path: '/pages/firstaid/firstaid' }
+  },
+  onShareTimeline() {
+    return { title: '宠物急救指南 · 关键时刻能救命' }
+  },
   data: {
     guides: GUIDES,
     // 当前展开的指南 id

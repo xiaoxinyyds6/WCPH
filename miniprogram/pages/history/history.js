@@ -4,6 +4,13 @@ const history = require('../../utils/history')
 const KIND_EMOJI = { 猫: '🐱', 狗: '🐶', 兔: '🐰', 鸟: '🐦', 仓鼠: '🐹', 乌龟: '🐢' }
 
 Page({
+  // ===== 分享给好友 / 朋友圈 =====
+  onShareAppMessage() {
+    return { title: 'AI宠物助手 · 健康档案', path: '/pages/mine/mine' }
+  },
+  onShareTimeline() {
+    return { title: 'AI宠物助手 · 健康档案' }
+  },
   data: {
     list: [],
     selecting: false,
@@ -61,7 +68,7 @@ Page({
       content: '确认删除历史浏览记录吗？',
       cancelText: '取消',
       confirmText: '确认',
-      confirmColor: '#FF5A5F',
+      confirmColor: '#D9534F',
       success: res => {
         if (!res.confirm) return
         const ids = this.data.selectedIds.slice()
@@ -82,7 +89,7 @@ Page({
       content: '确定清空全部历史浏览记录吗？',
       cancelText: '取消',
       confirmText: '确认',
-      confirmColor: '#FF5A5F',
+      confirmColor: '#D9534F',
       success: res => {
         if (!res.confirm) return
         history.clear()

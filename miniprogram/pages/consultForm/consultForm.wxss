@@ -30,7 +30,7 @@
   display: flex;
   align-items: center;
   min-height: 104rpx;
-  border-bottom: 2rpx solid #F0F1F5;
+  border-bottom: 2rpx solid #F7F3EC;
 }
 
 .row.column {
@@ -70,7 +70,7 @@
 .chip {
   padding: 10rpx 28rpx;
   border-radius: 999rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
   color: var(--text-sub);
   font-size: 26rpx;
   margin: 6rpx 14rpx 6rpx 0;
@@ -82,9 +82,24 @@
   font-weight: 600;
 }
 
+/* 「其他」补充输入：下划线输入框 */
+.other-input {
+  width: 100%;
+  height: 72rpx;
+  margin-top: 16rpx;
+  padding: 0 8rpx;
+  border-bottom: 2rpx solid var(--primary);
+  font-size: 27rpx;
+  color: var(--text-main);
+}
+
+.other-placeholder {
+  color: #B8C2C6;
+}
+
 /* 拍摄引导 */
 .shoot-tips {
-  background: #F8FAFF;
+  background: #FAF8F5;
   border-radius: 16rpx;
   padding: 20rpx 24rpx;
   margin-bottom: 20rpx;
@@ -114,7 +129,7 @@
   width: 100%;
   height: 100%;
   border-radius: 16rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
 }
 
 .img-del {
@@ -136,8 +151,8 @@
   width: 200rpx;
   height: 200rpx;
   border-radius: 16rpx;
-  border: 2rpx dashed #C2C6D0;
-  background: #FAFBFC;
+  border: 2rpx dashed #C7D2D2;
+  background: #FAF8F5;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -167,7 +182,7 @@
 }
 
 .ph {
-  color: #C2C6D0;
+  color: #C7D2D2;
 }
 
 .tip {
@@ -234,9 +249,9 @@
   white-space: nowrap;
 }
 
-.rp-badge.red { background: #FF5A5F; }
-.rp-badge.yellow { background: #FF9F43; }
-.rp-badge.green { background: #2BB673; }
+.rp-badge.red { background: #D9534F; }
+.rp-badge.yellow { background: #E6A23C; }
+.rp-badge.green { background: #4CAF7D; }
 
 .rp-summary {
   flex: 1;
@@ -257,7 +272,7 @@
   height: 200rpx;
   border-radius: 16rpx;
   margin: 0 14rpx 14rpx 0;
-  background: #F2F3F7;
+  background: #F7F3EC;
 }
 
 .rp-content {
@@ -272,7 +287,7 @@
   margin-top: 28rpx;
   padding: 24rpx;
   border-radius: 16rpx;
-  background: #F8FAFF;
+  background: #FAF8F5;
 }
 
 .rp-followup-title {
@@ -303,6 +318,11 @@
 
 .rp-actions .btn-plain {
   flex: 1;
+}
+
+.rp-actions .btn-supplement {
+  flex: 1;
+  margin-left: 24rpx;
 }
 
 .rp-actions .btn-primary {

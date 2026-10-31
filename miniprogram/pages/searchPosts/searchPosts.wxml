@@ -1,0 +1,59 @@
+<view class="page">
+  <!-- 搜索框 -->
+  <view class="search-box card">
+    <text class="s-icon">🔍</text>
+    <input
+      class="s-input"
+      placeholder="输入标题 / 内容关键词，多个词用空格隔开"
+      placeholder-class="s-ph"
+      confirm-type="search"
+      value="{{keyword}}"
+      focus
+      bindinput="onKeywordInput"
+      bindconfirm="onConfirm"
+    />
+    <text wx:if="{{keyword}}" class="s-clear" bindtap="onClear">✕</text>
+    <view class="s-btn {{searching ? 'disabled' : ''}}" bindtap="onConfirm">搜索</view>
+  </view>
+
+  <!-- 结果说明 -->
+  <view wx:if="{{searched}}" class="result-tip">
+    <block wx:if="{{posts.length}}">为你找到 {{posts.length}} 条相关内容</block>
+    <block wx:else>没有找到与“{{keyword}}”相关的帖子</block>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{searching}}" class="empty card">搜索中…</view>
+
+  <!-- 搜索结果：命中的关键词越多越靠前 -->
+  <block wx:if="{{!searching}}">
+    <view
+      class="result card"
+      wx:for="{{posts}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      bindtap="onPostTap"
+    >
+      <view class="r-head">
+        <view class="r-avatar">{{item.official ? '📢' : item.kindEmoji}}</view>
+        <view class="r-meta">
+          <view class="r-title-row">
+            <text class="r-title ellipsis">{{item.title}}</text>
+            <text wx:if="{{item.official}}" class="r-badge">官方</text>
+          </view>
+          <view class="r-sub">{{item.petKind}}{{item.petBreed ? ' · ' + item.petBreed : ''}} · {{item.timeText}}</view>
+        </view>
+      </view>
+      <view class="r-excerpt">{{item.excerpt}}</view>
+      <view class="r-foot">
+        <text>❤️ {{item.likeCount}}</text>
+        <text>💬 {{item.commentCount}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{searched && !posts.length}}" class="search-tip">
+      <view class="st-emoji">🐾</view>
+      <view class="st-text">换个关键词试试，或去广场看看最新案例</view>
+    </view>
+  </block>
+</view>

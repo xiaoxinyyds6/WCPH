@@ -26,7 +26,7 @@
 .avatar-section {
   padding: 8rpx 0 24rpx;
   text-align: center;
-  border-bottom: 2rpx solid #F0F1F5;
+  border-bottom: 2rpx solid #F7F3EC;
 }
 
 .avatar-preview {
@@ -87,7 +87,7 @@
   font-size: 46rpx;
   margin-right: 16rpx;
   border-radius: 24rpx;
-  background: #F5F6FA;
+  background: #FAF8F5;
   border: 3rpx solid transparent;
 }
 
@@ -106,7 +106,7 @@
   display: flex;
   align-items: center;
   min-height: 104rpx;
-  border-bottom: 2rpx solid #F0F1F5;
+  border-bottom: 2rpx solid #F7F3EC;
 }
 
 .row.column {
@@ -180,7 +180,7 @@
 }
 
 .ph {
-  color: #C2C6D0;
+  color: #C7D2D2;
 }
 
 .chips {
@@ -196,7 +196,7 @@
 .chip {
   padding: 8rpx 22rpx;
   border-radius: 999rpx;
-  background: #F2F3F7;
+  background: #F7F3EC;
   color: var(--text-sub);
   font-size: 24rpx;
   margin: 6rpx 0 6rpx 14rpx;
@@ -225,7 +225,7 @@
   border-radius: 999rpx;
   font-size: 30rpx;
   line-height: 2.6;
-  border: 2rpx solid #FFD9DA;
+  border: 2rpx solid #F5D8D6;
 }
 
 .btn-danger::after {

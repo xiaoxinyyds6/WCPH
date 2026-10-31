@@ -45,8 +45,8 @@
   margin-left: 12rpx;
   padding: 2rpx 12rpx;
   border-radius: 999rpx;
-  background: #E8F5EC;
-  color: #2BB673;
+  background: #EAF4EE;
+  color: #4CAF7D;
   font-size: 20rpx;
 }
 
@@ -88,7 +88,7 @@
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
-  background: #FFF0F0;
+  background: #FAEDED;
   box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.12);
   color: var(--danger);
   font-size: 34rpx;
