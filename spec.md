@@ -10,7 +10,7 @@
 | 云环境 | `ai-d5gc65qrdab971a09` |
 | 状态 | 功能可演示，未上线 |
 
-> 本文描述**当前代码实际做到什么程度**。v1.0（2026-10-22）为需求基线，未落地项统一收进第 6 节 Backlog。技术实现见 [`docs/`](./docs/)，其中架构、AI、数据模型、部署各有一篇。
+> 本文描述**当前代码实际做到什么程度**。v1.0（2026-10-22）为需求基线，未落地项统一收进第 6 节 Backlog。技术实现见 [`docs/`](./docs/)，按项目说明、能力、创新、技术、成果、历史、落地规划七篇组织，另有 AI、数据模型、部署三篇深入。
 
 ## 1. 产品定位与边界
 
@@ -40,7 +40,7 @@ TabBar 三项：
 - v1.0 规划「AI 助手 / 记录 / 我的」三 Tab；实际为「AI问诊 / 问诊广场 / 我的」，记录入口在「我的」。
 - v1.0 明确「不做 UGC 广场」；实际已上线问诊广场（大厅/精选/官方、发布审核、举报、通知）。
 
-页面共 26 个（含 3 个 Tab），完整地图与职责见 [docs/architecture.md](./docs/architecture.md#2-页面地图)。
+页面共 26 个（含 3 个 Tab），完整地图与职责见 [docs/04-technical.md](./docs/04-technical.md#2-页面结构设计)。
 
 ## 3. 功能规格
 
@@ -157,7 +157,7 @@ AI 请求失败时前端 toast「AI服务暂不可用，已用基础回复」，
 ## 4. 数据与接口
 
 - 12 个集合：`users / accounts / admins / sms_codes / pets / records / reminders / square_posts / square_reports / square_notifications / kb_docs / kb_meta`，字段与索引见 [docs/data-model.md](./docs/data-model.md)。
-- 8 个云函数：`login / pet / record / reminder / square / admin / assistant / notify`，action 契约见 [docs/architecture.md](./docs/architecture.md#3-云函数职责)。
+- 8 个云函数：`login / pet / record / reminder / square / admin / assistant / notify`，action 契约见 [docs/04-technical.md](./docs/04-technical.md#4-云函数职责)。
 - 统一返回 `{ ok, data }` / `{ ok: false, msg, detail? }`；前端经 `utils/cloud.js` 调用。
 
 ## 5. 非功能与合规

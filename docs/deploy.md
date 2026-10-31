@@ -1,6 +1,6 @@
 # 部署与运维
 
-从零把项目跑起来、上线前要补的配置，以及常见故障的排查顺序。功能清单见 [README](../README.md)，代码结构见 [architecture.md](./architecture.md)。
+从零把项目跑起来、上线前要补的配置，以及常见故障的排查顺序。功能清单见 [README](../README.md)，代码结构见 [04-technical.md](./04-technical.md)。
 
 ## 1. 前置条件
 
