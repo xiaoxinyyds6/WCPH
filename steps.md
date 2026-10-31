@@ -1,134 +1,210 @@
-# README 重构与 docs 建设 · 执行清单
+# README 与 docs 重构 · 执行清单
 
-> 目标：让 README 成为准确的「项目门面 + 快速开始」，把架构、AI、数据模型、部署细节拆到 `docs/`。
-> 约束：只改文档，不动业务代码；所有描述以当前工作区实现为准（含未提交改动）。
+> 目标：按 `docRequirement.txt` 的 a–g 七项规范重构 README 与 docs，补真实界面截图，提交并创建 `feature/zsb → main` 的 PR。
+> 约束：不改业务代码；截图使用微信开发者工具自动化，产物只放 `docs/screenshots/`；PR 由我推送后打开网页，你点「Create pull request」。
 
 ## 步骤总览
 
 | Step | 对应阶段 | 内容 | 状态 |
 |---|---|---|---|
-| 0 | — | 核对现状与 README 差距 | ✅ 2026-10-31 |
-| 1 | 文档 | 重写 README.md | ✅ 2026-10-31 |
-| 2 | 文档 | 新增 docs/architecture.md | ✅ 2026-10-31 |
-| 3 | 文档 | 新增 docs/ai.md | ✅ 2026-10-31 |
-| 4 | 文档 | 新增 docs/data-model.md | ✅ 2026-10-31 |
-| 5 | 文档 | 新增 docs/deploy.md | ✅ 2026-10-31 |
-| 6 | 文档 | 按现状重写 spec.md | ✅ 2026-10-31 |
-| 7 | 文档 | 全量交叉校验 | ✅ 2026-10-31 |
+| 0 | — | 只读盘点、能力取证与结构决策 | ✅ 2026-10-31 |
+| 1 | a | 新建 `docs/01-project.md` 项目说明 | ✅ 2026-10-31 |
+| 2 | b | 新建 `docs/02-capabilities.md` 能力矩阵 | ✅ 2026-10-31 |
+| 3 | c | 新建 `docs/03-innovation.md` 六维创新 | ✅ 2026-10-31 |
+| 4 | d | 新建 `docs/04-technical.md` 技术实现 | ✅ 2026-10-31 |
+| 5 | e | 采集 10 张真实界面截图 | ✅ 2026-10-31 |
+| 6 | e | 新建 `docs/05-results.md` 成果展示 | ✅ 2026-10-31 |
+| 7 | f | 新建 `docs/06-history.md` 历史说明 | ✅ 2026-10-31 |
+| 8 | g | 新建 `docs/07-roadmap.md` 落地规划 | ✅ 2026-10-31 |
+| 9 | — | 重构 `README.md` 为 a–g 门面 | ✅ 2026-10-31 |
+| 10 | — | 链接/锚点/计数校验与测试 | ✅ 2026-10-31 |
+| 11 | — | git 提交并推送 `feature/zsb` | 🚧 进行中 |
+| 12 | — | 打开 PR 创建页并交付文案 | ⏳ 待开始 |
+| 13 | — | 追加会话记忆（单独确认） | ⏳ 待确认 |
 
 ---
 
-## Step 0 · 核对现状与 README 差距（只读，已完成）
+## Step 0 · 只读盘点（已完成）
 
-- 已读：`README.md`、`spec.md`、`miniprogram/app.json`、`app.js`、`utils/cloud.js`、`utils/util.js`、主要页面、8 个云函数、`package.json`、`project.config.json`、`.gitignore`、`test/`。
-- 已核对 `git status` / `git diff`，当前有 21 个文件改动、6 个知识库种子文件与 `test/` 未跟踪。
-- 主要差距：
-  1. 页面清单缺 `forgotPassword/setPassword/searchPosts/likedPosts/myPosts/history/messages/topic/recordsList/hospitals/firstaid/adminLogin` 等。
-  2. 云函数清单缺 `admin`、`notify`；`test/` 与种子文件未提及。
-  3. AI 说明仍是「视觉模型 + 规则兜底」，未写 RAG 知识库、Agent 工具调用、图像两阶段诊断、情感分析、超时预算。
-  4. 登录方式写成「微信手机号一键登录」，实际无 `getPhoneNumber`；现为微信授权 + 验证码 + 账号密码 + 找回/设置密码。
-  5. 管理员写成「openid 白名单 + 我的页入口」，实际为 `admins` 集合 + 账号密码 + 登录页入口；`square` 内仍残留 `ADMIN_OPENIDS` 硬编码。
-  6. 内容安全描述自相矛盾（已接入 / 未接入）；实际文本已接入且 fail-open，图片与 AI 输出未校验。
-  7. 数据模型缺 `admins/accounts/square_posts/square_reports/square_notifications/kb_docs/kb_meta`。
-  8. 部署缺 `ZHIPU_API_KEY`、`TENCENT_MAP_KEY` / `tencent_key.js`、`notify` 定时触发器与模板 ID、索引与权限说明。
+- 已读：`memory/index.md`、`memory/2026-10-31.md`、`memory/2026-10-26.md`、`README.md`、`docs/*.md`、`spec.md`、`app.json`、`package.json`、`project.config.json`、`.gitignore`。
+- 已核对能力调用点：`onShareAppMessage/onShareTimeline`（26 页）、`wx.getLocation/openLocation/makePhoneCall/chooseMedia/previewImage`、`requestSubscribeMessage`、`wx.cloud.uploadFile`、`msgSecCheck`、`subscribeMessage.send`、`downloadFile`。
+- 已确认：GitHub 无 open PR；本机无 `gh`；开发者工具位于 `D:\WeChatDev\微信web开发者工具`，CLI 已登录。
+- 已确认：仓库内无界面截图；`vibe_images/` 为无关临时图且已被忽略。
+- 用户决策：7 篇编号文档 + 3 篇技术深入；历史按「无往届成果 + 本项目自身迭代」；PR 用网页创建；截图走开发者工具。
 
-**完成判据**：差距清单覆盖上述全部项，且与代码一致。
+**完成判据**：文档结构、能力清单、截图路径、PR 方式均有明确结论。
 
 ---
 
-## Step 1 · 重写 `README.md`
+## Step 1 · `docs/01-project.md`（a 项目说明）
 
-- 涉及文件：`README.md`（整体替换）。
-- 结构（目标 130–160 行）：
-  1. 项目名 + 一句话定位 + 技术栈徽标式纯文本（不引入图片）。
-  2. 核心能力（按用户视角分组：问诊、档案、提醒、广场、工具、管理）。
-  3. 技术架构一图流（文字版：小程序 → 云函数 → 云数据库/云存储 → 智谱 GLM / 腾讯位置服务）。
-  4. 仓库结构（页面、云函数、测试、文档）。
-  5. 快速开始（5 步）：打开项目 → 确认 env → 部署 8 个云函数 → 配置环境变量 → 编译。
-  6. 文档索引（链到 docs/）。
-  7. 已知限制与合规声明（演示验证码、订阅消息待模板、内容安全 fail-open、默认管理员口令）。
-- 保留：License、spec 链接（注明 spec 为需求基线）。
-- 删除：过时的「规划中」表、逐页功能长清单、与代码不符的部署细节（移入 docs）。
-- **完成判据**：页面/云函数/集合清单与仓库一致；快速开始可照做；无自相矛盾表述。
+- 新建 `docs/01-project.md`，包含：
+  1. 一句话定位与产品边界（不诊断、不开处方、不给剂量）；
+  2. 目标用户画像（新手宠物主、多宠家庭、预防型用户、预算敏感用户）；
+  3. 使用场景（日常咨询、症状初判、疫苗/驱虫/复诊提醒、经验互助、急症应急、附近医院）；
+  4. 核心流程：登录 → 建档 → 问诊（文字/拍照）→ 记录 → 提醒 → 广场 → 复诊，配 Mermaid 流程图；
+  5. 功能清单表（模块 / 能力 / 入口 / 实现状态）；
+  6. 演示录屏：给出 60–90 秒录制脚本与文件落位 `docs/assets/demo.mp4`（录屏为规范建议项，不阻塞）。
+
+**完成判据**：目标用户、场景、核心流程、功能清单齐全，流程与 `app.json` 实际 26 页一致。
 
 ---
 
-## Step 2 · 新增 `docs/architecture.md`
+## Step 2 · `docs/02-capabilities.md`（b 能力说明）
 
-- 内容：
-  - 运行时架构与请求链路（小程序 → `utils/cloud.js` → 云函数 → DB/存储 → 外部服务）。
-  - 页面地图（Tab + 二级页 + 管理端），标注孤儿页 `pages/featured`。
-  - 云函数职责与 action 表（login/pet/record/reminder/square/admin/assistant/notify）。
-  - 鉴权模型：普通用户 openid 会话、账号密码、管理员 `admins` 集合、`square` 遗留白名单。
-  - 四条关键数据流：文字问诊、拍照问诊、广场发布审核、提醒推送。
-  - 开发约定（`{ok,data,msg}`、`requireLogin`、5 只上限、envId 单一来源）。
-- **完成判据**：action 表与代码逐项对应；数据流能据此定位文件。
+- 新建 `docs/02-capabilities.md`，三张主表 + 一张边界表：
+  1. 微信小程序能力：登录态/openid、分享、订阅消息、定位与地图、拍照/相册、图片预览、拨号、本地存储、隐私授权、内容安全；每项标注「状态 + 代码位置」；
+  2. 云开发能力：8 个云函数、12 个集合、云存储、定时触发器、云调用 openapi、环境变量；
+  3. AI 能力：GLM-4-flash 文本、GLM-4.6V/4V 视觉、Function Calling Agent（2 个工具）、RAG（约 875 条）、两阶段图像诊断、OCR（视觉模型内）、情感分析、降级规则；
+  4. 能力边界：**未接入**微信支付、语音识别、微信 OCR 插件、手机号快速验证、客服消息，逐项说明替代方案。
+- 所有「已接入」结论必须能在代码中定位，不写未落地能力。
 
----
-
-## Step 3 · 新增 `docs/ai.md`
-
-- 内容：
-  - 模型与超时预算（`glm-4.6v-flash` → `glm-4v-flash`、`glm-4-flash`、52s 预算、重试策略）。
-  - 纯文本：Agent Function Calling（`get_weather`、`search_kb`）+ 最多 3 轮。
-  - 拍照问诊：观察师 → 审查员两阶段、知识库联合检索、1024 token 限制。
-  - RAG：`kb_docs` / `kb_meta`、v1–v9 增量播种、bigram 分词与打分、管理员维护入口。
-  - 情感分析、内容安全、输出结构（level/summary/content/followUp）。
-  - 降级链路：模型失败 → 前端本地 `util.aiConsult` 规则回复；医院检索失败 → 演示数据。
-  - 测试：`npm test` 覆盖范围与 mock 方式、如何新增回归用例。
-- **完成判据**：新同学能据此改 prompt / 加知识 / 排查模型失败。
+**完成判据**：规范点名的登录/支付/分享/订阅消息/地图/OCR/语音/大模型/RAG/Agent 均有「已接入/未接入 + 依据」。
 
 ---
 
-## Step 4 · 新增 `docs/data-model.md`
+## Step 3 · `docs/03-innovation.md`（c 创新点）
 
-- 内容：12 个集合的用途、字段、索引建议、写入方、隔离方式。
-  - `users`、`pets`、`records`、`reminders`、`sms_codes`
-  - `admins`、`accounts`
-  - `square_posts`、`square_reports`、`square_notifications`
-  - `kb_docs`、`kb_meta`
-- 附表：自动建集合清单、需手动加的索引（`reminders._openid+dueAt` 等）、脱敏/敏感字段（密码盐与哈希、手机号）。
-- **完成判据**：字段名与代码一致；索引建议可执行。
+- 新建 `docs/03-innovation.md`，按六维展开，每维含「做法 / 差异点 / 代码或数据证据 / 当前边界」：
+  - AI 应用创新：观察师→审查员两阶段 + RAG + Agent 工具；
+  - 场景创新：问诊→档案袋→提醒→广场的连续场景；
+  - 产品创新：脱敏发布、先审后发、举报下架、红十字急症指引；
+  - 技术创新：60s 预算内的模型降级与重试、无向量库的轻量 RAG、统一云函数协议；
+  - 商业模式创新：基础工具免费 + 增值服务/医院合作（明确标注「规划中」）；
+  - 用户体验创新：红黄绿分级、免责前置、失败不白屏、演示数据兜底。
 
----
-
-## Step 5 · 新增 `docs/deploy.md`
-
-- 内容：
-  - 前置条件（AppID、云环境、基础库、Node）。
-  - 环境变量：`ZHIPU_API_KEY`、`TENCENT_MAP_KEY`（或本地 `tencent_key.js`，已 gitignore）。
-  - 8 个云函数部署顺序与「云端安装依赖」；`notify` 定时触发器（每天 9:00）。
-  - 订阅消息：申请模板 → 两处填模板 ID（`notify/index.js`、`reminderEdit.js`）→ 字段对齐。
-  - 管理员初始化：首次 `admin/Admin@123456` 播种并绑定当前 openid、改密、`square` 白名单说明。
-  - 数据库索引与权限、内容安全 openapi 权限。
-  - 常见故障排查表（云函数未部署、Key 未配、定位失败、订阅 43101 等）。
-  - 上线检查清单。
-- **完成判据**：按文档从零可跑通；故障表覆盖当前已知降级提示。
+**完成判据**：六维齐全，未落地内容一律标注「规划中」，不与现状混淆。
 
 ---
 
-## Step 6 · 按现状重写 `spec.md`
+## Step 4 · `docs/04-technical.md`（d 技术实现）
 
-- 现状：`spec.md` 更新日期 2026-10-22，明确「不做 UGC 广场」，与已实现的问诊广场冲突；三 Tab 目标也未落地。
-- 已确认方案：**按当前实现重写为 as-built 产品规格**。
-- 结构：定位与边界 → 用户与场景 → 信息架构（三 Tab 实际为 AI问诊/问诊广场/我的）→ 逐模块功能规格（档案/问诊/记录/提醒/广场/工具/账号与后台）→ 非功能与合规 → 未实现项（Backlog）→ 验收清单。
-- 与 docs 分工：spec 讲「产品是什么、做到什么程度」，技术细节链到 `docs/`，不重复展开。
-- **完成判据**：无「不做广场」等与实现冲突的表述；已实现/未实现边界清晰；README 对 spec 的定位描述一致。
+- 将 `docs/architecture.md` 重命名为 `docs/04-technical.md` 并扩充：
+  1. 核心架构图（保留分层图，补 Mermaid 部署/调用图）；
+  2. 页面结构设计（3 Tab + 26 页地图，保留原表）；
+  3. 前后端协同（`callFunction` 协议、超时、错误、鉴权、数据隔离，补时序图）；
+  4. 关键代码片段（真实摘录）：`utils/cloud.js` 调用封装、assistant Agent 循环、`searchKb` 检索、notify 扫描推送；
+  5. AI 接入方案与难点解决：60s 预算、多模型回退、JSON 解析、图片 base64、RAG 召回、审核状态机、定位降级；
+  6. 云函数职责、数据模型与部署链接（`ai.md` / `data-model.md` / `deploy.md`）。
+- 同步更新 `spec.md`、`docs/deploy.md` 中对 `architecture.md` 的链接。
 
----
-
-## Step 7 · 全量交叉校验
-
-- 用脚本/命令核对：`app.json` 页面数、`cloudfunctions/` 目录、集合名、文档内相对链接。
-- 检查中英文标点、代码块语言标记、失效锚点。
-- 更新 `steps.md` 状态表。
-- **完成判据**：所有链接可跳转；清单零缺漏；`git diff` 仅含文档改动。
+**完成判据**：架构图、页面结构、协同方式、关键代码、AI 方案与难点六项齐全；旧链接 0 失效。
 
 ---
 
-## 决策点（已确认 2026-10-31）
+## Step 5 · 采集界面截图（e）
 
-1. **docs 拆分粒度**：4 篇完整版（architecture / ai / data-model / deploy）。
-2. **README 部署细节**：5 步快速开始 + 链到 `docs/deploy.md`。
-3. **spec.md**：按现状重写为 as-built 产品规格。
-4. **记忆记录**：同意按既定方式追加，不优化已有记忆文件。
+- 在 `%TEMP%\wcp-auto` 安装 `miniprogram-automator`（仓库外，不改 `package.json`）。
+- 用 `cli.bat auto --project <仓库根> --auto-port 9420` 启动自动化，连接后逐页截图。
+- 目标 10 张，统一 750×1334、PNG，存 `docs/screenshots/`：
+  1. `01-consult.png` AI 问诊首页
+  2. `02-consult-form.png` 拍照问诊表单
+  3. `03-chat.png` AI 对话
+  4. `04-records.png` 问诊记录
+  5. `05-reminders.png` 健康计划
+  6. `06-square.png` 问诊广场
+  7. `07-post-detail.png` 帖子详情
+  8. `08-hospitals.png` 附近医院
+  9. `09-firstaid.png` 急救指南
+  10. `10-admin.png` 管理后台
+- 需要登录态的页面通过运行时写入本地缓存/`globalData` 模拟，不改源码。
+- 若某页因云环境/登录/权限失败：保留其余截图，失败页改用「界面结构说明 + 待补清单」，并如实汇报，不伪造。
+
+**完成判据**：至少 8 张真实截图落盘且可打开；失败页有明确原因与补图清单。
+
+---
+
+## Step 6 · `docs/05-results.md`（e 成果展示）
+
+- 新建 `docs/05-results.md`：
+  1. 截图墙（引用 Step 5 产物，每张配一句展示点）；
+  2. 关键流程演示 5 条：登录→建档、文字问诊、拍照问诊、提醒创建、广场发布→审核→互动；
+  3. 运行效果：开发者工具 + 基础库 3.17.3 + 云环境实测说明；
+  4. 测试记录：当日实际执行的 `npm test`、`node --check`、链接检查结果表；
+  5. 已知限制与未覆盖项（截图未覆盖页面、无 UI 自动化）。
+
+**完成判据**：截图可显示、5 条流程可复现、测试记录为实际输出。
+
+---
+
+## Step 7 · `docs/06-history.md`（f 历史说明）
+
+- 新建 `docs/06-history.md`：
+  1. 明确写「无往届参赛成果」；
+  2. 本项目自身迭代：v1.0（2026-10-22 需求基线，22 页/7 云函数/本地规则）→ v2.0（26 页/8 云函数/GLM+RAG+广场+审核）；
+  3. 优化明细表：AI 能力、图像两阶段、记录与提醒、广场与治理、后台、主题、文档；
+  4. 未落地/变更项：三 Tab 计划、手机号登录改 openid、订阅消息模板未接。
+
+**完成判据**：结论明确，优化项能对应到当前代码；不夸大为「往届获奖作品」。
+
+---
+
+## Step 8 · `docs/07-roadmap.md`（g 落地规划）
+
+- 新建 `docs/07-roadmap.md`：
+  1. 上线计划：合规整改 → 灰度 → 正式，含时间、事项、验收标准；
+  2. 用户增长：校园/宠物社群冷启动、帖子分享、小程序搜索、医院合作、提醒留存；
+  3. 运营机制：审核 SLA、举报处理、知识库更新、UGC 激励、数据看板；
+  4. 商业闭环：免费基础 + 会员增值 + 医院导流 + 品牌合作，标注「规划中」与合规边界；
+  5. 版本迭代：V2.1 合规/订阅消息 → V2.2 多轮与硬拦截 → V2.3 体验补齐 → V3.0 商业化试点；
+  6. 指标与风险：北极星指标、成本项、内容安全与医疗合规风险。
+
+**完成判据**：上线、增长、运营、商业、迭代五项齐全，时间与验收可执行。
+
+---
+
+## Step 9 · 重构 `README.md`（a–g 门面）
+
+- 重写 `README.md`，顺序固定为 a–g，每节 3–8 行 + 指向详细文档：
+  - 项目说明（含目标用户/场景/核心流程图/截图）；
+  - 小程序与 AI 能力（已接入/未接入速览表）；
+  - 创新点（六维一句话表）；
+  - 技术实现（架构图 + 页面结构 + 关键代码 + 难点）；
+  - 成果展示（截图缩略 + 测试结果）；
+  - 历史说明；
+  - 落地规划；
+  - 保留「快速开始（5 步）」「仓库结构」「文档索引」「License」。
+- 修正旧 README 的过时描述，确保与 `app.json`、云函数、集合数一致。
+
+**完成判据**：a–g 七项在 README 中可逐项找到，且无与代码矛盾的陈述。
+
+---
+
+## Step 10 · 一致性校验与测试
+
+- 自建 Node 脚本检查 README/docs 的相对链接与锚点、截图文件是否存在。
+- 校验 26 页、8 云函数、12 集合在文档中出现且计数一致。
+- 执行 `npm test`（预期 7/7）与全部 JS `node --check`。
+- 检查无密钥、无本地路径、无占位符混入正文。
+
+**完成判据**：链接 0 失效、计数一致、测试全绿、无敏感信息。
+
+---
+
+## Step 11 · git 提交与推送
+
+- 提交范围：`README.md`、`docs/**`、`spec.md`（仅链接）、`steps.md`；`docRequirement.txt` 是否入库待你确认（默认入库为规范附件）。
+- 不提交：`memory/`、`vibe_images/`、`project.private.config.json`、任何密钥。
+- 提交信息：`docs: 按文档规范重构 README 与 docs（a–g 七项）`。
+- 推送 `origin feature/zsb`。
+
+**完成判据**：`git status` 干净（除明确不提交项），远程分支更新成功。
+
+---
+
+## Step 12 · 创建 PR 到 main
+
+- 打开 `https://github.com/xiaoxinyyds6/WCPH/compare/main...feature/zsb?expand=1`，由你点击「Create pull request」。
+- 同时给出可直接粘贴的 PR 标题与正文（变更概览、文档结构、验证结果、风险）。
+- 若你希望改为 API 自动创建，需另行提供 PAT。
+
+**完成判据**：PR 页面已打开、文案已交付；你确认创建成功。
+
+---
+
+## Step 13 · 会话记忆（单独确认）
+
+- 按既有格式追加 `memory/2026-10-31.md` 与 `memory/index.md`。
+- 写入前单独征得同意；默认不优化已有记忆内容。
+
+**完成判据**：经你同意后完成追加。
